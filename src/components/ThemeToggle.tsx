@@ -6,6 +6,12 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -20,18 +26,27 @@ export function ThemeToggle() {
   };
 
   if (!mounted) {
-    // Render a placeholder or null to avoid layout shift during hydration
-    // and to ensure the button is interactive once mounted.
     return <Button variant="ghost" size="icon" className="h-10 w-10" disabled />;
   }
 
+  const tooltipText = theme === "dark" ? "Change to light mode" : "Change to dark mode";
+
   return (
-    <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
-      {theme === "dark" ? (
-        <Sun className="h-[1.2rem] w-[1.2rem] transition-all" />
-      ) : (
-        <Moon className="h-[1.2rem] w-[1.2rem] transition-all" />
-      )}
-    </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={tooltipText}>
+            {theme === "dark" ? (
+              <Sun className="h-[1.2rem] w-[1.2rem] transition-all" />
+            ) : (
+              <Moon className="h-[1.2rem] w-[1.2rem] transition-all" />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltipText}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

@@ -9,7 +9,7 @@ import { ThemeProvider } from 'next-themes';
 export default function AppProviders({ children }: { children: ReactNode }) {
   return (
     <AuthProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
         {children}
         <Toaster />
       </ThemeProvider>
