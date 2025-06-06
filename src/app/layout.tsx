@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
@@ -5,8 +6,8 @@ import { Toaster } from '@/components/ui/toaster';
 import AppProviders from '@/components/AppProviders';
 
 export const metadata: Metadata = {
-  title: 'Mawaqit - Your Personal Namaz Companion',
-  description: 'Track your daily prayers, get inspired, and find guidance with Mawaqit.',
+  title: 'SUJUD - Your Personal Namaz Companion',
+  description: 'Track your daily prayers, get inspired, and find guidance with SUJUD.',
 };
 
 export default function RootLayout({

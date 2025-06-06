@@ -24,7 +24,7 @@ export default function PublicFooter() {
           <div className="flex flex-col items-center md:items-start">
             <Link href="/" className="flex items-center gap-2 mb-2">
               <InlineMosqueIcon className="h-7 w-7 text-primary" />
-              <span className="text-xl font-bold font-headline text-primary">Mawaqit</span>
+              <span className="text-xl font-bold font-headline text-primary">SUJUD</span>
             </Link>
             <p className="text-sm text-muted-foreground text-center md:text-left">
               Your personal companion for consistent prayer and spiritual growth.
@@ -50,7 +50,7 @@ export default function PublicFooter() {
           </div>
         </div>
         <div className="mt-10 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-          © {currentYear} Mawaqit. All rights reserved.
+          © {currentYear} SUJUD. All rights reserved.
         </div>
       </div>
     </footer>

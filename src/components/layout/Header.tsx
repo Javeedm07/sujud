@@ -27,10 +27,10 @@ export default function Header() {
     <header className="bg-card shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/home" className="flex items-center gap-2">
-           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-primary">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/>
+          <svg width="32" height="32" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" className="text-primary" fill="currentColor">
+            <path d="M120-120v-480h80v190l280-175 280 175v-190h80v480H120Zm140-20h80v-170l-40-25-40 25v170Zm400 0h80v-170l-40-25-40 25v170ZM480-565 200-740v-100q0-24 18-42t42-18h400q24 0 42 18t18 42v100L480-565Z"/>
           </svg>
-          <h1 className="text-2xl font-headline font-bold text-primary">Mawaqit</h1>
+          <h1 className="text-2xl font-headline font-bold text-primary">SUJUD</h1>
         </Link>
         
         <nav className="flex items-center gap-4">

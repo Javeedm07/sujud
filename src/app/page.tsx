@@ -34,7 +34,7 @@ export default function LandingPage() {
   ];
 
   const howItWorksSteps = [
-    { title: "Sign Up for Free", description: "Create your Mawaqit account in seconds and start your journey." },
+    { title: "Sign Up for Free", description: "Create your SUJUD account in seconds and start your journey." },
     { title: "Track Your Prayers", description: "Use the intuitive daily checklist to mark your completed Salah." },
     { title: "Seek Guidance", description: "Explore daily inspirations and get personalized Quranic verses." },
     { title: "Observe Your Growth", description: "Monitor your progress and consistency on your personal dashboard." },
@@ -49,7 +49,7 @@ export default function LandingPage() {
         <section className="py-20 md:py-32 bg-background text-center">
           <div className="container mx-auto px-4">
             <h1 className="text-4xl md:text-6xl font-bold font-headline text-primary mb-6">
-              Mawaqit: Your Personal Companion for Consistent Prayer
+              SUJUD: Your Personal Companion for Consistent Prayer
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto">
               Track your daily Salah, find daily inspiration, and deepen your connection through personalized Quranic guidance. Stay mindful, stay consistent.
@@ -60,7 +60,7 @@ export default function LandingPage() {
             <div className="mt-12 rounded-lg overflow-hidden shadow-2xl max-w-4xl mx-auto">
               <Image
                 src="https://placehold.co/1200x600.png"
-                alt="Mawaqit App Preview"
+                alt="SUJUD App Preview"
                 width={1200}
                 height={600}
                 className="w-full h-auto"
@@ -121,7 +121,7 @@ export default function LandingPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { name: "Aisha K.", quote: "Mawaqit has transformed my prayer habits. The daily reminders and inspirational content keep me motivated!", image: "https://placehold.co/100x100.png", hint: "woman portrait" },
+                { name: "Aisha K.", quote: "SUJUD has transformed my prayer habits. The daily reminders and inspirational content keep me motivated!", image: "https://placehold.co/100x100.png", hint: "woman portrait" },
                 { name: "Omar S.", quote: "Tracking my prayers has never been easier. The personalized verses are a wonderful touch for reflection.", image: "https://placehold.co/100x100.png", hint: "man portrait" },
                 { name: "Fatima B.", quote: "A beautiful and intuitive app. It's my go-to companion for staying consistent with my Salah and finding peace.", image: "https://placehold.co/100x100.png", hint: "woman smiling" },
               ].map((testimonial, index) => (
@@ -144,7 +144,7 @@ export default function LandingPage() {
               Embark on Your Path to Consistent Prayer Today
             </h2>
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
-              Join Mawaqit and transform your spiritual routine. It's free to start, and the rewards are eternal.
+              Join SUJUD and transform your spiritual routine. It's free to start, and the rewards are eternal.
             </p>
             <Button size="lg" variant="secondary" asChild className="shadow-lg hover:shadow-xl transition-shadow">
               <Link href="/signup">Sign Up Now <ArrowRight className="ml-2 h-5 w-5" /></Link>

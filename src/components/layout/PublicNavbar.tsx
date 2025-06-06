@@ -32,7 +32,7 @@ export default function PublicNavbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
           <InlineMosqueIcon className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold font-headline text-primary">Mawaqit</span>
+          <span className="text-2xl font-bold font-headline text-primary">SUJUD</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
@@ -65,7 +65,7 @@ export default function PublicNavbar() {
               <div className="flex flex-col space-y-6">
                 <Link href="/" className="flex items-center gap-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
                   <InlineMosqueIcon className="h-8 w-8 text-primary" />
-                  <span className="text-2xl font-bold font-headline text-primary">Mawaqit</span>
+                  <span className="text-2xl font-bold font-headline text-primary">SUJUD</span>
                 </Link>
                 {navLinks.map((link) => (
                   <Link

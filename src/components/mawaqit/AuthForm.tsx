@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { z } from 'zod';
@@ -39,7 +40,7 @@ export default function AuthForm({ formSchema, onSubmit, onGoogleSignIn, mode, l
             {mode === 'login' ? 'Welcome Back' : 'Create Account'}
           </CardTitle>
           <CardDescription>
-            {mode === 'login' ? 'Sign in to access Mawaqit' : 'Join Mawaqit to track your prayers'}
+            {mode === 'login' ? 'Sign in to access SUJUD' : 'Join SUJUD to track your prayers'}
           </CardDescription>
         </CardHeader>
         <CardContent>

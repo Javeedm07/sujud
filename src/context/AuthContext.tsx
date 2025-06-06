@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await firebaseSignOut(auth);
       setUser(null); // Clear user state
-      router.push('/login'); // Redirect to login page
+      router.push('/'); // Redirect to landing page
     } catch (error) {
       console.error("Error signing out: ", error);
       // Optionally, show a toast notification for sign-out errors
@@ -68,13 +68,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   if (user) {
     if (isAuthPageForRender || isLandingPageForRender) {
-      return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to Mawaqit...</p></div>;
+      return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to SUJUD...</p></div>;
     }
   } else { 
     if (!isLandingPageForRender && !isAuthPageForRender) {
+      // This case means user is not logged in, AND is not on landing/auth page.
+      // If they are trying to access a protected route, this will kick in after initial load.
+      // The useEffect above handles the redirect earlier, this is a fallback for rendering.
       return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to login...</p></div>;
     }
   }
-
+  
   return <AuthContext.Provider value={{ user, loading, signOut }}>{children}</AuthContext.Provider>;
 };

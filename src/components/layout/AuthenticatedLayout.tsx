@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -28,7 +29,7 @@ export default function AuthenticatedLayout({ children }: { children: ReactNode 
         {children}
       </main>
       <footer className="py-6 text-center text-muted-foreground text-sm">
-        © {new Date().getFullYear()} Mawaqit. All rights reserved.
+        © {new Date().getFullYear()} SUJUD. All rights reserved.
       </footer>
     </div>
   );
