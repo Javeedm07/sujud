@@ -64,7 +64,7 @@ export default function LandingPage() {
                 width={1200}
                 height={600}
                 className="w-full h-auto"
-                data-ai-hint="serene mosque silhouette"
+                data-ai-hint="prayer rug"
                 priority
               />
             </div>
