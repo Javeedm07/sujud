@@ -36,27 +36,23 @@ export default function PrayerHistoryPage() {
             Select a date from the calendar to view or update your prayer log.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="md:col-span-1 shadow-lg bg-card/80 backdrop-blur-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-1 shadow-lg bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary">Select Date</CardTitle>
             </CardHeader>
-            <CardContent className="p-2 sm:p-6">
-              <div className="flex justify-center"> 
-                <div className="overflow-x-auto">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={handleDateSelect}
-                    className="rounded-md border min-w-[300px]" 
-                    // Allow selection of past dates, disable future dates
-                    toDate={new Date()} 
-                  />
-                </div>
-              </div>
+            <CardContent className="p-4 flex justify-center"> 
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateSelect}
+                className="rounded-md border" 
+                // Allow selection of past dates, disable future dates
+                toDate={new Date()} 
+              />
             </CardContent>
           </Card>
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             {selectedDate ? (
               <NamazChecklist
                 key={checklistDateString} // Force re-render if date string changes
