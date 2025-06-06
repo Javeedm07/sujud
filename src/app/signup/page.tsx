@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -29,7 +30,7 @@ export default function SignupPage() {
       // You can set a display name here if you have a field for it
       // await updateProfile(userCredential.user, { displayName: "Some Name" });
       toast({ title: 'Success', description: 'Account created successfully.' });
-      router.push('/');
+      router.push('/home'); // Redirect to /home
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Signup Failed', description: error.message });
       console.error('Signup error:', error);
@@ -44,7 +45,7 @@ export default function SignupPage() {
     try {
       await signInWithPopup(auth, provider);
       toast({ title: 'Success', description: 'Signed up with Google successfully.' });
-      router.push('/');
+      router.push('/home'); // Redirect to /home
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Google Sign-Up Failed', description: error.message });
       console.error('Google sign-up error:', error);

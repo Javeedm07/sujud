@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -25,7 +26,7 @@ export default function Header() {
   return (
     <header className="bg-card shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/home" className="flex items-center gap-2">
            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-primary">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/>
           </svg>
@@ -36,7 +37,7 @@ export default function Header() {
           {user && (
             <>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/" className="flex items-center gap-1">
+                <Link href="/home" className="flex items-center gap-1">
                   <Home size={18} /> Home
                 </Link>
               </Button>
@@ -80,6 +81,7 @@ export default function Header() {
             </DropdownMenu>
           ) : (
             <>
+              {/* Fallback for when header is shown on a public page before AuthContext redirects (should be rare) */}
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">Login</Link>
               </Button>

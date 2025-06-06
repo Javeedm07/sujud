@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -30,14 +31,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading) return; // Don't run redirect logic until auth state is determined
 
+    const publicPaths = ['/', '/login', '/signup']; // Landing page '/' is now public
     const isAuthPage = pathname === '/login' || pathname === '/signup';
+    const isPublicPath = publicPaths.includes(pathname);
 
-    if (!user && !isAuthPage) {
-      router.push('/login');
-    } else if (user && isAuthPage) {
-      router.push('/');
+    if (user) { // User is logged in
+      if (isAuthPage) {
+        router.push('/home'); // Redirect from /login or /signup to /home
+      } else if (pathname === '/') {
+        router.push('/home'); // Redirect from landing page to /home if logged in
+      }
+      // If user is logged in and on any other authenticated page (e.g., /home, /dashboard), do nothing.
+    } else { // User is NOT logged in
+      if (!isPublicPath) {
+        router.push('/login'); // If on a protected page, redirect to /login
+      }
+      // If user is not logged in and on a public path (/, /login, /signup), do nothing.
     }
   }, [user, loading, router, pathname]);
 
@@ -45,8 +56,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
-      setUser(null);
-      router.push('/login');
+      setUser(null); // Explicitly set user to null
+      router.push('/login'); // Redirect to login page after sign out
     } catch (error) {
       console.error("Error signing out: ", error);
     }
@@ -54,24 +65,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const value = { user, loading, signOut };
 
-  if (loading && (pathname !== '/login' && pathname !== '/signup')) {
-     // Full screen loader can be added here
-    return <div className="flex items-center justify-center min-h-screen bg-background"><p>Loading...</p></div>;
-  }
-  
-  // Prevent rendering children on auth pages if user is already determined or loading auth state for non-auth pages
-  if (loading && (pathname === '/login' || pathname === '/signup')) {
-    return <div className="flex items-center justify-center min-h-screen bg-background"><p>Loading...</p></div>;
+  // Handle rendering based on auth state and current path
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen bg-background"><p>Loading session...</p></div>;
   }
 
-  if (!loading && !user && pathname !== '/login' && pathname !== '/signup') {
-    return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to login...</p></div>;
-  }
-  
-  if (!loading && user && (pathname === '/login' || pathname === '/signup')) {
-     return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to dashboard...</p></div>;
+  const publicPaths = ['/', '/login', '/signup'];
+  const isAuthPage = pathname === '/login' || pathname === '/signup';
+
+  if (user) { // User is logged in
+    if (isAuthPage || pathname === '/') {
+      // useEffect will redirect. Show a placeholder message.
+      return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to Mawaqit...</p></div>;
+    }
+  } else { // User is not logged in
+    if (!publicPaths.includes(pathname)) {
+      // useEffect will redirect. Show a placeholder message.
+      return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to login...</p></div>;
+    }
   }
 
-
+  // If no redirect is imminent, render the children with the context
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
