@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const InlineMosqueIcon = ({ className }: { className?: string }) => (
   <svg
@@ -35,59 +36,63 @@ export default function PublicNavbar() {
           <span className="text-2xl font-bold font-headline text-primary">SUJUD</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link key={link.label} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex items-center gap-3">
+          <nav className="hidden md:flex items-center gap-6 mr-3">
+            {navLinks.map((link) => (
+              <Link key={link.label} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
-        <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Login</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/signup">Sign Up</Link>
-          </Button>
-        </div>
+          <ThemeToggle />
 
-        {/* Mobile Menu */}
-        <div className="md:hidden">
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background p-6">
-              <div className="flex flex-col space-y-6">
-                <Link href="/" className="flex items-center gap-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
-                  <InlineMosqueIcon className="h-8 w-8 text-primary" />
-                  <span className="text-2xl font-bold font-headline text-primary">SUJUD</span>
-                </Link>
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className="text-lg font-medium text-foreground transition-colors hover:text-primary"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.label}
+          <div className="hidden md:flex items-center gap-3">
+            <Button variant="ghost" asChild>
+              <Link href="/login">Login</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/signup">Sign Up</Link>
+            </Button>
+          </div>
+
+          {/* Mobile Menu */}
+          <div className="md:hidden">
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background p-6">
+                <div className="flex flex-col space-y-6">
+                  <Link href="/" className="flex items-center gap-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
+                    <InlineMosqueIcon className="h-8 w-8 text-primary" />
+                    <span className="text-2xl font-bold font-headline text-primary">SUJUD</span>
                   </Link>
-                ))}
-                <div className="border-t border-border pt-6 space-y-3">
-                  <Button variant="outline" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
-                    <Link href="/login">Login</Link>
-                  </Button>
-                  <Button className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
-                    <Link href="/signup">Sign Up</Link>
-                  </Button>
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      className="text-lg font-medium text-foreground transition-colors hover:text-primary"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                  <div className="border-t border-border pt-6 space-y-3">
+                    <Button variant="outline" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
+                      <Link href="/login">Login</Link>
+                    </Button>
+                    <Button className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
+                      <Link href="/signup">Sign Up</Link>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>

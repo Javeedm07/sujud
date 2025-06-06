@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 // Inline SVG for Mosque Icon
 const InlineMosqueIcon = ({ className }: { className?: string }) => (
@@ -54,6 +55,7 @@ export default function Header() {
         </Link>
         
         <nav className="flex items-center gap-1 sm:gap-2">
+          <ThemeToggle />
           {user && (
             <>
               {navItems.map((item) => {
@@ -79,7 +81,7 @@ export default function Header() {
           )}
           
           {loading ? (
-            <div className="h-8 w-8 bg-muted rounded-full animate-pulse"></div>
+            <div className="h-10 w-10 bg-muted rounded-full animate-pulse"></div>
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
