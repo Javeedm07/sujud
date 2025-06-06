@@ -68,10 +68,12 @@ export default function ProfilePage() {
     const normalizedName = name?.trim();
     if (normalizedName && normalizedName.toLowerCase() !== "user" && normalizedName !== "") {
       const parts = normalizedName.split(' ');
-      if (parts.length > 1) {
+      if (parts.length > 1 && parts[0] && parts[parts.length - 1]) {
         return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
       }
-      return normalizedName.substring(0, 2).toUpperCase();
+      if (parts[0]) {
+        return parts[0].substring(0, 2).toUpperCase();
+      }
     }
     if (email) return email.substring(0, 2).toUpperCase();
     return "U"; 
@@ -88,13 +90,13 @@ export default function ProfilePage() {
 
     try {
       const authUpdates: { displayName?: string | null; photoURL?: string | null } = {
-        photoURL: null // Always set photoURL to null
+        photoURL: null 
       };
       
       if (finalDisplayName !== user.displayName) {
         authUpdates.displayName = finalDisplayName;
       }
-      // Check if photoURL is already null, to avoid unnecessary update if no display name change
+      
       if (finalDisplayName !== user.displayName || user.photoURL !== null) {
          await updateProfile(user, authUpdates);
       }
@@ -180,11 +182,11 @@ export default function ProfilePage() {
               <CardHeader className="items-center">
                 <div className="flex flex-col items-center space-y-4">
                     <Avatar className="h-32 w-32 text-4xl mb-2">
-                        <AvatarImage src={undefined} alt={watchedDisplayName || user.displayName || user.email || "User"} />
+                        <AvatarImage src={undefined} alt={user.displayName || user.email || "User"} />
                         <AvatarFallback>{getInitials(user.email, watchedDisplayName || user.displayName)}</AvatarFallback>
                     </Avatar>
                 </div>
-                <CardTitle className="text-2xl mt-4">{watchedDisplayName || user.displayName || 'User'}</CardTitle>
+                <CardTitle className="text-2xl mt-4">{user.displayName || 'User'}</CardTitle>
                 <CardDescription>{user.email}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
