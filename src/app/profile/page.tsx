@@ -41,6 +41,10 @@ export default function ProfilePage() {
     },
   });
 
+  // Watch the displayName field to update initials preview dynamically if needed
+  // const watchedDisplayName = form.watch('displayName');
+
+
   useEffect(() => {
     if (user) {
       setPageLoading(true);
@@ -60,7 +64,7 @@ export default function ProfilePage() {
         })
         .finally(() => setPageLoading(false));
     } else if (!authLoading) {
-      setPageLoading(false);
+      setPageLoading(false); // No user and auth is done loading
     }
   }, [user, form, toast, authLoading]);
 
@@ -80,7 +84,7 @@ export default function ProfilePage() {
   };
   
   const onSubmit = async (data: ProfileFormValues) => {
-    if (!user) {
+    if (!user || !auth.currentUser) { // Ensure auth.currentUser is also available
       toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to update your profile.' });
       return;
     }
@@ -90,15 +94,14 @@ export default function ProfilePage() {
 
     try {
       const authUpdates: { displayName?: string | null; photoURL?: string | null } = {
-        photoURL: null 
+        photoURL: null // Always set photoURL to null as per requirements
       };
       
-      if (finalDisplayName !== user.displayName) {
+      // Check if displayName needs update or if photoURL needs to be nulled explicitly
+      if (finalDisplayName !== auth.currentUser.displayName || auth.currentUser.photoURL !== null) {
         authUpdates.displayName = finalDisplayName;
-      }
-      
-      if (finalDisplayName !== user.displayName || user.photoURL !== null) {
-         await updateProfile(user, authUpdates);
+        // Use auth.currentUser directly for updateProfile
+        await updateProfile(auth.currentUser, authUpdates);
       }
 
 
@@ -112,6 +115,7 @@ export default function ProfilePage() {
           await updateUserProfileData(user.uid, firestoreUpdates);
       }
       
+      // Refresh context user state with the latest from auth.currentUser
       if (auth.currentUser) {
         setUser({ ...auth.currentUser } as User); 
       }
@@ -165,6 +169,10 @@ export default function ProfilePage() {
     );
   }
 
+  // Use user.displayName for the CardTitle which reflects the saved state
+  const currentDisplayName = user.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' ? user.displayName : 'User';
+
+
   return (
     <AuthenticatedLayout>
       <div className="space-y-6 max-w-2xl mx-auto">
@@ -182,10 +190,12 @@ export default function ProfilePage() {
                 <div className="flex flex-col items-center space-y-4">
                     <Avatar className="h-32 w-32 text-4xl mb-2">
                         <AvatarImage src={undefined} alt={user.displayName || user.email || "User"} />
+                        {/* AvatarFallback uses user.displayName to only reflect saved state */}
                         <AvatarFallback>{getInitials(user.email, user.displayName)}</AvatarFallback>
                     </Avatar>
                 </div>
-                <CardTitle className="text-2xl mt-4">{user.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' ? user.displayName : 'User'}</CardTitle>
+                {/* CardTitle uses currentDisplayName which only reflects saved state */}
+                <CardTitle className="text-2xl mt-4">{currentDisplayName}</CardTitle>
                 <CardDescription>{user.email}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
