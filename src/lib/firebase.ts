@@ -15,35 +15,50 @@ const firebaseConfig = {
 
 let app: FirebaseApp;
 
-// Check if all required config values are present
-const requiredConfigKeys = ['apiKey', 'authDomain', 'projectId', 'appId'];
-const missingKeys = requiredConfigKeys.filter(key => !firebaseConfig[key as keyof typeof firebaseConfig]);
+// Check if critical config values are missing or empty
+const criticalKeys = ['apiKey', 'authDomain', 'projectId', 'appId'];
+const missingCriticalKeys = criticalKeys.filter(key => {
+  const value = firebaseConfig[key as keyof typeof firebaseConfig];
+  return !value || value.trim() === '' || value.startsWith('YOUR_'); // Check for placeholders too
+});
 
-if (missingKeys.length > 0) {
-  console.error(`Firebase config is missing the following keys: ${missingKeys.join(', ')}. Please check your .env file and ensure all NEXT_PUBLIC_FIREBASE_ variables are set correctly.`);
-  // You might want to throw an error here or handle this case appropriately
-  // For now, we'll let initializeApp fail if it's going to, to see the Firebase SDK's error.
+if (missingCriticalKeys.length > 0) {
+  const message = `CRITICAL Firebase config is missing, empty, or using placeholder values for keys: ${missingCriticalKeys.join(', ')}. 
+Firebase cannot be initialized. Please ensure:
+1. You have a .env file in the root of your project.
+2. All NEXT_PUBLIC_FIREBASE_ environment variables are correctly set in .env with your *actual* Firebase project credentials.
+3. You have RESTARTED your Next.js development server after creating or modifying the .env file.`;
+  console.error(message);
+  // Throw an error here to stop further execution if critical config is missing
+  throw new Error(message);
 }
 
-
 if (!getApps().length) {
-  if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId && firebaseConfig.appId) {
+  try {
     app = initializeApp(firebaseConfig);
-  } else {
-    // Avoid calling initializeApp if critical config is missing
-    // This helps prevent the "configuration-not-found" error if env vars are missing
-    console.error("Firebase app initialization skipped due to missing critical configuration. See previous error message for details.");
-    // Provide a dummy app object or handle this state in your application
-    // For now, this will likely lead to errors downstream if 'app' is used without being initialized.
-    // A more robust solution would be to prevent app usage or show a specific error UI.
+  } catch (e) {
+    console.error("Error during Firebase initializeApp:", e);
+    const errorMsg = `Firebase initializeApp failed. This usually means your .env file contains incorrect Firebase credentials, or there's a network issue.
+Please verify:
+1. A .env file exists at the project root.
+2. It contains all required NEXT_PUBLIC_FIREBASE_ variables.
+3. The values are correct for your Firebase project.
+4. You have RESTARTED your Next.js development server after any changes to .env.
+Original error: ${(e as Error).message}`;
+    throw new Error(errorMsg);
   }
 } else {
   app = getApps()[0];
 }
 
-// @ts-ignore auth and db might not be initialized if app is not.
-const auth: Auth = app ? getAuth(app) : ({} as Auth);
-// @ts-ignore
-const db: Firestore = app ? getFirestore(app) : ({} as Firestore);
+// If 'app' is somehow still not defined after the above (shouldn't happen if throw above works)
+if (!app) {
+    const errorMsg = `Firebase app could not be initialized for an unknown reason, though critical config checks passed. This is unexpected. Please check server logs and Firebase setup.`;
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+}
+
+const auth: Auth = getAuth(app);
+const db: Firestore = getFirestore(app);
 
 export { app, auth, db };
