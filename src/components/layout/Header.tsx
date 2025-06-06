@@ -38,10 +38,16 @@ export default function Header() {
   const getInitials = (email?: string | null, name?: string | null) => {
     const normalizedName = name?.trim();
     if (normalizedName && normalizedName.toLowerCase() !== "user" && normalizedName !== "") {
-      return normalizedName.substring(0, 2).toUpperCase();
+      const parts = normalizedName.split(' ');
+      if (parts.length > 1 && parts[0] && parts[parts.length - 1]) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      if (parts[0]) {
+        return parts[0].substring(0, 2).toUpperCase();
+      }
     }
     if (email) return email.substring(0, 2).toUpperCase();
-    return "U"; // Default for "User", empty name, or no email
+    return "U"; 
   };
 
   const navItems = [
@@ -136,3 +142,4 @@ export default function Header() {
     </header>
   );
 }
+
