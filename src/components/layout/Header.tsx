@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, LayoutDashboard, LogOut, User, Settings, Moon, Sun, BookOpenText } from 'lucide-react';
+import { Home, LayoutDashboard, LogOut, User, Settings, Moon, Sun, BookOpenText, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -14,6 +14,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+// Inline SVG for Mosque Icon
+const InlineMosqueIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 -960 960 960"
+    className={className}
+    fill="currentColor"
+  >
+    <path d="M120-120v-480h80v190l280-175 280 175v-190h80v480H120Zm140-20h80v-170l-40-25-40 25v170Zm400 0h80v-170l-40-25-40 25v170ZM480-565 200-740v-100q0-24 18-42t42-18h400q24 0 42 18t18 42v100L480-565Z"/>
+  </svg>
+);
+
 
 export default function Header() {
   const { user, signOut, loading } = useAuth();
@@ -27,23 +40,26 @@ export default function Header() {
     <header className="bg-card shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/home" className="flex items-center gap-2">
-          <svg width="32" height="32" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" className="text-primary" fill="currentColor">
-            <path d="M120-120v-480h80v190l280-175 280 175v-190h80v480H120Zm140-20h80v-170l-40-25-40 25v170Zm400 0h80v-170l-40-25-40 25v170ZM480-565 200-740v-100q0-24 18-42t42-18h400q24 0 42 18t18 42v100L480-565Z"/>
-          </svg>
+          <InlineMosqueIcon className="h-8 w-8 text-primary" />
           <h1 className="text-2xl font-headline font-bold text-primary">SUJUD</h1>
         </Link>
         
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-2 sm:gap-4">
           {user && (
             <>
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/home" className="flex items-center gap-1">
-                  <Home size={18} /> Home
+                  <Home size={18} /> <span className="hidden sm:inline">Home</span>
                 </Link>
               </Button>
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/dashboard" className="flex items-center gap-1">
-                  <LayoutDashboard size={18} /> Dashboard
+                  <LayoutDashboard size={18} /> <span className="hidden sm:inline">Dashboard</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/prayer-history" className="flex items-center gap-1">
+                  <CalendarDays size={18} /> <span className="hidden sm:inline">History</span>
                 </Link>
               </Button>
             </>
@@ -81,7 +97,6 @@ export default function Header() {
             </DropdownMenu>
           ) : (
             <>
-              {/* Fallback for when header is shown on a public page before AuthContext redirects (should be rare) */}
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">Login</Link>
               </Button>

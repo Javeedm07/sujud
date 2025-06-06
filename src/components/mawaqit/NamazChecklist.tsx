@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ChangeEvent } from 'react';
@@ -9,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Moon, Sunrise, Sun, Sunset, CloudSun, CheckCircle2, Circle } from 'lucide-react';
+import { Moon, Sunrise, Sun, Sunset, CloudSun } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const prayerIcons: Record<PrayerName, React.ElementType> = {
@@ -20,21 +21,31 @@ const prayerIcons: Record<PrayerName, React.ElementType> = {
   Isha: Moon,
 };
 
-export default function NamazChecklist() {
+interface NamazChecklistProps {
+  initialDateString?: string;
+}
+
+export default function NamazChecklist({ initialDateString }: NamazChecklistProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [prayers, setPrayers] = useState<DailyPrayers | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Use a state for the date string, initialized by prop or today's date
+  const [dateStringForChecklist, setDateStringForChecklist] = useState(initialDateString || getTodayDateString());
 
-  const todayDateString = getTodayDateString();
+  // Update internal dateString if the prop changes
+  useEffect(() => {
+    setDateStringForChecklist(initialDateString || getTodayDateString());
+  }, [initialDateString]);
 
   const fetchPrayers = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     setError(null);
     try {
-      const dailyPrayersData = await getDailyPrayers(user.uid, todayDateString);
+      const dailyPrayersData = await getDailyPrayers(user.uid, dateStringForChecklist);
       setPrayers(dailyPrayersData);
     } catch (err) {
       console.error("Failed to fetch prayers:", err);
@@ -43,16 +54,17 @@ export default function NamazChecklist() {
     } finally {
       setLoading(false);
     }
-  }, [user, todayDateString, toast]);
+  }, [user, dateStringForChecklist, toast]);
 
   useEffect(() => {
-    fetchPrayers();
-  }, [fetchPrayers]);
+    if (user && dateStringForChecklist) {
+      fetchPrayers();
+    }
+  }, [fetchPrayers, user, dateStringForChecklist]); // Ensure fetchPrayers is called when dateStringForChecklist changes
 
   const handlePrayerToggle = async (prayerName: PrayerName, checked: boolean) => {
     if (!user || !prayers) return;
 
-    // Optimistic update
     const originalPrayers = { ...prayers };
     setPrayers(prev => prev ? ({
       ...prev,
@@ -60,16 +72,15 @@ export default function NamazChecklist() {
     }) : null);
 
     try {
-      await updatePrayerStatus(user.uid, todayDateString, prayerName, checked);
+      await updatePrayerStatus(user.uid, dateStringForChecklist, prayerName, checked);
       toast({
         title: "Prayer Updated",
-        description: `${prayerName} marked as ${checked ? 'completed' : 'pending'}.`,
+        description: `${prayerName} marked as ${checked ? 'completed' : 'pending'} for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}.`,
       });
     } catch (err) {
       console.error("Failed to update prayer:", err);
       setError(`Failed to update ${prayerName}. Please try again.`);
       toast({ variant: "destructive", title: "Error", description: `Failed to update ${prayerName}.` });
-      // Revert optimistic update
       setPrayers(originalPrayers);
     }
   };
@@ -78,8 +89,10 @@ export default function NamazChecklist() {
     return (
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-headline text-primary">Today&apos;s Prayers</CardTitle>
-          <CardDescription>Loading your prayer checklist for {new Date(todayDateString).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}...</CardDescription>
+          <CardTitle className="text-2xl font-headline text-primary">
+            {initialDateString === getTodayDateString() || !initialDateString ? "Today's Prayers" : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`}
+          </CardTitle>
+          <CardDescription>Loading your prayer checklist for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}...</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {PRAYER_NAMES.map((name) => (
@@ -112,20 +125,24 @@ export default function NamazChecklist() {
      return (
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-headline text-primary">Today&apos;s Prayers</CardTitle>
-           <CardDescription>No prayer data found for {new Date(todayDateString).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.</CardDescription>
+           <CardTitle className="text-2xl font-headline text-primary">
+            {initialDateString === getTodayDateString() || !initialDateString ? "Today's Prayers" : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`}
+           </CardTitle>
+           <CardDescription>No prayer data found for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.</CardDescription>
         </CardHeader>
-         <CardContent><p>Could not initialize prayer data.</p></CardContent>
+         <CardContent><p>Could not initialize prayer data for this day. Prayers might be recorded once you interact with them.</p></CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="shadow-lg  bg-card/80 backdrop-blur-sm">
+    <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-2xl font-headline text-primary">Today&apos;s Prayers</CardTitle>
+        <CardTitle className="text-2xl font-headline text-primary">
+          {initialDateString === getTodayDateString() || !initialDateString ? "Today's Prayers" : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`}
+        </CardTitle>
         <CardDescription>
-          Check off your prayers for {new Date(todayDateString).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.
+          Check off your prayers for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -139,12 +156,12 @@ export default function NamazChecklist() {
             >
               <div className="flex items-center space-x-3">
                 <Icon className={`w-6 h-6 ${isCompleted ? 'text-accent' : 'text-primary/70'}`} />
-                <Label htmlFor={prayerName} className={`text-lg ${isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                <Label htmlFor={`${prayerName}-${dateStringForChecklist}`} className={`text-lg ${isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                   {prayerName}
                 </Label>
               </div>
               <Checkbox
-                id={prayerName}
+                id={`${prayerName}-${dateStringForChecklist}`}
                 checked={isCompleted}
                 onCheckedChange={(checked) => handlePrayerToggle(prayerName, Boolean(checked))}
                 aria-label={`Mark ${prayerName} as ${isCompleted ? 'pending' : 'completed'}`}

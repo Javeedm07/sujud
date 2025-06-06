@@ -13,6 +13,13 @@ const getTodayDateString = (): string => {
   return `${year}-${month}-${day}`;
 };
 
+export const convertDateToYYYYMMDD = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const getDailyPrayers = async (userId: string, date: string): Promise<DailyPrayers | null> => {
   try {
     const prayerDocRef = doc(db, 'users', userId, 'prayers', date);
@@ -54,7 +61,6 @@ export const updatePrayerStatus = async (userId: string, date: string, prayerNam
     prayerUpdate[`${prayerName}.completed`] = completed;
     prayerUpdate[`${prayerName}.timestamp`] = completed ? serverTimestamp() : null;
     
-    // Ensure document exists before updating, or create it
     const docSnap = await getDoc(prayerDocRef);
     if (!docSnap.exists()) {
       const newDailyPrayers: DailyPrayers = {
@@ -66,7 +72,7 @@ export const updatePrayerStatus = async (userId: string, date: string, prayerNam
         Isha: { completed: false, timestamp: null },
       };
       // @ts-ignore
-      newDailyPrayers[prayerName] = { completed, timestamp: completed ? new Date() : null }; // Approx serverTimestamp
+      newDailyPrayers[prayerName] = { completed, timestamp: completed ? new Date() : null }; 
       await setDoc(prayerDocRef, newDailyPrayers);
     } else {
       await updateDoc(prayerDocRef, prayerUpdate);
@@ -81,11 +87,10 @@ export const updatePrayerStatus = async (userId: string, date: string, prayerNam
 export const fetchDailyInspiration = async (): Promise<DailyInspirationContent | null> => {
   try {
     const inspirationsColRef = collection(db, 'daily_inspirations');
-    const q = query(inspirationsColRef); // Potentially add orderBy random and limit 1 if supported or feasible
+    const q = query(inspirationsColRef); 
     const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {
-      // Seed data if collection is empty
       await seedDailyInspirations();
       const seededSnapshot = await getDocs(q);
       if (seededSnapshot.empty) return null;
@@ -95,11 +100,9 @@ export const fetchDailyInspiration = async (): Promise<DailyInspirationContent |
     }
 
     const inspirations = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as DailyInspirationContent));
-    // Select a random inspiration
     return inspirations[Math.floor(Math.random() * inspirations.length)];
   } catch (error) {
     console.error("Error fetching daily inspiration:", error);
-    // Fallback to a default inspiration if fetching fails
     return {
       id: 'fallback',
       type: 'quote',
@@ -109,7 +112,6 @@ export const fetchDailyInspiration = async (): Promise<DailyInspirationContent |
   }
 };
 
-// Seed data for daily inspirations
 const seedDailyInspirations = async () => {
   const inspirations = [
     { type: 'verse', content: "Indeed, with hardship [will be] ease.", source: "Quran 94:6" },
@@ -121,28 +123,21 @@ const seedDailyInspirations = async () => {
 
   const inspirationsColRef = collection(db, 'daily_inspirations');
   for (const insp of inspirations) {
-    // Use content as ID for simplicity in seeding to avoid duplicates on multiple calls
-    // A better approach would be to check if data already exists.
     const docRef = doc(inspirationsColRef, insp.content.substring(0,20).replace(/ /g, '_')); 
     await setDoc(docRef, insp);
   }
   console.log("Daily inspirations seeded.");
 };
 
-// Helper to get prayer data for charts
 export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' | 'monthly', filter?: PrayerName | 'all'): Promise<DocumentData[]> => {
-  // This is a placeholder. Actual implementation would involve more complex queries
-  // and data aggregation, possibly using Firebase Functions for monthly/weekly rollups.
-  // For MVP, we might just fetch last 7 days for the bar chart.
-  
   const prayerData: DocumentData[] = [];
   const today = new Date();
 
-  if (period === 'daily') { // For past 7 days bar chart
+  if (period === 'daily') { 
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const dateString = convertDateToYYYYMMDD(date);
       
       const dailyPrayersDoc = await getDoc(doc(db, 'users', userId, 'prayers', dateString));
       let completedCount = 0;
@@ -159,16 +154,13 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
       prayerData.push({ date: dateString, count: completedCount });
     }
   } 
-  // For Pie chart (monthly overall) and Line chart (weekly trend) - more complex, needs aggregation.
-  // Placeholder for now.
   else if (period === 'monthly' && filter) {
-     // Fetch last 30 days for simplicity
      let totalPrayers = 0;
      let completedPrayers = 0;
      for (let i = 29; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
-        const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        const dateString = convertDateToYYYYMMDD(date);
         const dailyPrayersDoc = await getDoc(doc(db, 'users', userId, 'prayers', dateString));
         if (dailyPrayersDoc.exists()) {
             const data = dailyPrayersDoc.data() as DailyPrayers;
@@ -182,7 +174,6 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
                  if (data[filter as PrayerName]?.completed) completedPrayers++;
             }
         } else {
-          // If no record, assume all prayers for that day were missed for that filter
           if (filter === 'all') totalPrayers += PRAYER_NAMES.length;
           else totalPrayers++;
         }
@@ -195,13 +186,12 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
      }
 
   } else if (period === 'weekly') {
-    // Placeholder: 4 weeks of data, total completed prayers per week
     for (let week = 3; week >= 0; week--) {
       let weeklyCompletedCount = 0;
       for(let day = 6; day >=0; day--) {
         const date = new Date(today);
         date.setDate(today.getDate() - (week * 7 + day));
-        const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        const dateString = convertDateToYYYYMMDD(date);
         const dailyPrayersDoc = await getDoc(doc(db, 'users', userId, 'prayers', dateString));
         if (dailyPrayersDoc.exists()) {
           const data = dailyPrayersDoc.data() as DailyPrayers;
@@ -215,8 +205,6 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
       prayerData.push({ week: `Week ${4-week}`, count: weeklyCompletedCount });
     }
   }
-
-
   return prayerData;
 };
 
