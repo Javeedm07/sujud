@@ -191,7 +191,7 @@ export default function ProfilePage() {
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your full name" {...field} />
+                        <Input placeholder="Enter your full name" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -204,7 +204,7 @@ export default function ProfilePage() {
                     <FormItem>
                       <FormLabel>Mobile Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your mobile number (e.g., +1 123 456 7890)" {...field} />
+                        <Input placeholder="Enter your mobile number (e.g., +1 123 456 7890)" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -217,7 +217,7 @@ export default function ProfilePage() {
                     <FormItem>
                       <FormLabel>Profile Photo URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://example.com/your-photo.jpg" {...field} />
+                        <Input placeholder="https://example.com/your-photo.jpg" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
