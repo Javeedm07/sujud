@@ -2,7 +2,8 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, LayoutDashboard, LogOut, User, Settings, Moon, Sun, BookOpenText, CalendarDays } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Home, LayoutDashboard, LogOut, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -14,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from '@/lib/utils';
 
 // Inline SVG for Mosque Icon
 const InlineMosqueIcon = ({ className }: { className?: string }) => (
@@ -30,11 +32,18 @@ const InlineMosqueIcon = ({ className }: { className?: string }) => (
 
 export default function Header() {
   const { user, signOut, loading } = useAuth();
+  const pathname = usePathname();
 
   const getInitials = (email?: string | null) => {
     if (!email) return "U";
     return email.substring(0, 2).toUpperCase();
   };
+
+  const navItems = [
+    { href: "/home", label: "Home", icon: Home },
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/prayer-history", label: "History", icon: CalendarDays },
+  ];
 
   return (
     <header className="bg-card shadow-sm sticky top-0 z-50">
@@ -44,24 +53,28 @@ export default function Header() {
           <h1 className="text-2xl font-headline font-bold text-primary">SUJUD</h1>
         </Link>
         
-        <nav className="flex items-center gap-2 sm:gap-4">
+        <nav className="flex items-center gap-1 sm:gap-2">
           {user && (
             <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/home" className="flex items-center gap-1">
-                  <Home size={18} /> <span className="hidden sm:inline">Home</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard" className="flex items-center gap-1">
-                  <LayoutDashboard size={18} /> <span className="hidden sm:inline">Dashboard</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/prayer-history" className="flex items-center gap-1">
-                  <CalendarDays size={18} /> <span className="hidden sm:inline">History</span>
-                </Link>
-              </Button>
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Button
+                    key={item.label}
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className={cn(
+                      "flex items-center gap-1",
+                      isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary/90"
+                    )}
+                  >
+                    <Link href={item.href}>
+                      <item.icon size={18} /> <span className="hidden sm:inline">{item.label}</span>
+                    </Link>
+                  </Button>
+                );
+              })}
             </>
           )}
           

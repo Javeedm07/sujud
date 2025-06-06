@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -97,7 +98,7 @@ export default function PrayerStats() {
                 <BarChart data={barData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" tickFormatter={(tick) => new Date(tick).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} stroke="hsl(var(--muted-foreground))" />
-                    <YAxis allowDecimals={false} stroke="hsl(var(--muted-foreground))" />
+                    <YAxis allowDecimals={false} stroke="hsl(var(--muted-foreground))" domain={[0, 5]} />
                     <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} labelStyle={{ color: 'hsl(var(--foreground))' }} itemStyle={{ color: BAR_COLOR }} />
                     <Bar dataKey="count" fill={BAR_COLOR} name="Completed Prayers" radius={[4, 4, 0, 0]} />
                 </BarChart>
