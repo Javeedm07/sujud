@@ -1,3 +1,4 @@
+
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy, limit, FirestoreError, DocumentData, serverTimestamp, Timestamp } from 'firebase/firestore';
 import type { DailyPrayers, PrayerName, DailyInspirationContent } from '@/lib/types';
@@ -37,7 +38,7 @@ export const getDailyPrayers = async (userId: string, date: string): Promise<Dai
         Maghrib: { completed: false, timestamp: null },
         Isha: { completed: false, timestamp: null },
       };
-      await setDoc(prayerDocRef, newDailyPrayERS);
+      await setDoc(prayerDocRef, newDailyPrayers);
       return newDailyPrayers;
     }
   } catch (error) {
