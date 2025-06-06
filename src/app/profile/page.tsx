@@ -125,7 +125,6 @@ export default function ProfilePage() {
     }
   };
   
-  const watchedDisplayName = form.watch('displayName');
 
   if (authLoading || pageLoading) {
     return (
@@ -183,10 +182,10 @@ export default function ProfilePage() {
                 <div className="flex flex-col items-center space-y-4">
                     <Avatar className="h-32 w-32 text-4xl mb-2">
                         <AvatarImage src={undefined} alt={user.displayName || user.email || "User"} />
-                        <AvatarFallback>{getInitials(user.email, watchedDisplayName || user.displayName)}</AvatarFallback>
+                        <AvatarFallback>{getInitials(user.email, user.displayName)}</AvatarFallback>
                     </Avatar>
                 </div>
-                <CardTitle className="text-2xl mt-4">{user.displayName || 'User'}</CardTitle>
+                <CardTitle className="text-2xl mt-4">{user.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' ? user.displayName : 'User'}</CardTitle>
                 <CardDescription>{user.email}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
