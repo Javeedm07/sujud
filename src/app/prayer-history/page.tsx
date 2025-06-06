@@ -41,15 +41,19 @@ export default function PrayerHistoryPage() {
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary">Select Date</CardTitle>
             </CardHeader>
-            <CardContent className="flex justify-center p-2 sm:p-6">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateSelect}
-                className="rounded-md border"
-                // Allow selection of past dates, disable future dates
-                toDate={new Date()} 
-              />
+            <CardContent className="p-2 sm:p-6">
+              <div className="flex justify-center"> 
+                <div className="overflow-x-auto">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelect}
+                    className="rounded-md border min-w-[300px]" 
+                    // Allow selection of past dates, disable future dates
+                    toDate={new Date()} 
+                  />
+                </div>
+              </div>
             </CardContent>
           </Card>
           <div className="md:col-span-2">
@@ -74,3 +78,4 @@ export default function PrayerHistoryPage() {
     </AuthenticatedLayout>
   );
 }
+
