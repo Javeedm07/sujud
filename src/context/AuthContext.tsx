@@ -33,58 +33,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (loading) return; // Don't run redirect logic until auth state is determined
 
-    const publicPaths = ['/', '/login', '/signup']; // Landing page '/' is now public
     const isAuthPage = pathname === '/login' || pathname === '/signup';
-    const isPublicPath = publicPaths.includes(pathname);
+    const isLandingPage = pathname === '/';
 
     if (user) { // User is logged in
-      if (isAuthPage) {
-        router.push('/home'); // Redirect from /login or /signup to /home
-      } else if (pathname === '/') {
-        router.push('/home'); // Redirect from landing page to /home if logged in
+      if (isAuthPage || isLandingPage) {
+        router.push('/home'); // Redirect from /login, /signup, or / to /home
       }
       // If user is logged in and on any other authenticated page (e.g., /home, /dashboard), do nothing.
     } else { // User is NOT logged in
-      if (!isPublicPath) {
-        router.push('/login'); // If on a protected page, redirect to /login
+      // Unauthenticated users should be able to access landing, login, and signup pages.
+      // If they are on any other page, redirect them to login.
+      if (!isLandingPage && !isAuthPage) {
+        router.push('/login');
       }
-      // If user is not logged in and on a public path (/, /login, /signup), do nothing.
+      // If on landing, login, or signup page, do nothing and allow access.
     }
   }, [user, loading, router, pathname]);
 
 
-  const signOut = async () => {
-    try {
-      await firebaseSignOut(auth);
-      setUser(null); // Explicitly set user to null
-      router.push('/login'); // Redirect to login page after sign out
-    } catch (error) {
-      console.error("Error signing out: ", error);
-    }
-  };
-
-  const value = { user, loading, signOut };
-
-  // Handle rendering based on auth state and current path
+  // Handle rendering based on auth state and current path to show loading/redirecting messages
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen bg-background"><p>Loading session...</p></div>;
   }
 
-  const publicPaths = ['/', '/login', '/signup'];
-  const isAuthPage = pathname === '/login' || pathname === '/signup';
+  const isAuthPageForRender = pathname === '/login' || pathname === '/signup';
+  const isLandingPageForRender = pathname === '/';
 
   if (user) { // User is logged in
-    if (isAuthPage || pathname === '/') {
+    if (isAuthPageForRender || isLandingPageForRender) {
       // useEffect will redirect. Show a placeholder message.
       return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to Mawaqit...</p></div>;
     }
   } else { // User is not logged in
-    if (!publicPaths.includes(pathname)) {
+    // If on a protected page (not landing, login, or signup), show redirecting message
+    if (!isLandingPageForRender && !isAuthPageForRender) {
       // useEffect will redirect. Show a placeholder message.
       return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to login...</p></div>;
     }
   }
 
-  // If no redirect is imminent, render the children with the context
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  // If no redirect is imminent or user is on an allowed page, render the children
+  return <AuthContext.Provider value={{ user, loading, signOut }}>{children}</AuthContext.Provider>;
 };
+
