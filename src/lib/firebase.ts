@@ -2,6 +2,7 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,7 +17,7 @@ const firebaseConfig = {
 let app: FirebaseApp;
 
 // Check if critical config values are missing or empty
-const criticalKeys = ['apiKey', 'authDomain', 'projectId', 'appId'];
+const criticalKeys = ['apiKey', 'authDomain', 'projectId', 'appId', 'storageBucket']; // Added storageBucket
 const missingCriticalKeys = criticalKeys.filter(key => {
   const value = firebaseConfig[key as keyof typeof firebaseConfig];
   return !value || value.trim() === '' || value.startsWith('YOUR_'); // Check for placeholders too
@@ -60,5 +61,6 @@ if (!app) {
 
 const auth: Auth = getAuth(app);
 const db: Firestore = getFirestore(app);
+const storage = getStorage(app); // Initialize Firebase Storage
 
-export { app, auth, db };
+export { app, auth, db, storage }; // Export storage

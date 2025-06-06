@@ -36,9 +36,12 @@ export default function Header() {
   const pathname = usePathname();
 
   const getInitials = (email?: string | null, name?: string | null) => {
-    if (name) return name.substring(0, 2).toUpperCase();
+    const normalizedName = name?.trim();
+    if (normalizedName && normalizedName.toLowerCase() !== "user" && normalizedName !== "") {
+      return normalizedName.substring(0, 2).toUpperCase();
+    }
     if (email) return email.substring(0, 2).toUpperCase();
-    return "U";
+    return "U"; // Default for "User", empty name, or no email
   };
 
   const navItems = [
