@@ -12,6 +12,7 @@ export interface AuthContextType {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>; // Expose setUser
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,14 +31,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const signOut = useCallback(async () => {
+  const performSignOut = useCallback(async () => {
     try {
       await firebaseSignOut(auth);
-      setUser(null); // Clear user state
-      router.push('/'); // Redirect to landing page
+      setUser(null); 
+      router.push('/'); 
     } catch (error) {
       console.error("Error signing out: ", error);
-      // Optionally, show a toast notification for sign-out errors
     }
   }, [router]);
 
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const isLandingPage = pathname === '/';
 
     if (user) { 
-      if (isAuthPage || isLandingPage) {
+      if (isAuthPage) { // Only redirect from auth pages if logged in
         router.push('/home'); 
       }
     } else { 
@@ -67,17 +67,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isLandingPageForRender = pathname === '/';
 
   if (user) {
-    if (isAuthPageForRender || isLandingPageForRender) {
+    // If user is logged in AND on an auth page, show loading/redirecting message
+    if (isAuthPageForRender) { 
       return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to SUJUD...</p></div>;
     }
   } else { 
+    // If user is NOT logged in AND NOT on landing/auth page, show loading/redirecting
     if (!isLandingPageForRender && !isAuthPageForRender) {
-      // This case means user is not logged in, AND is not on landing/auth page.
-      // If they are trying to access a protected route, this will kick in after initial load.
-      // The useEffect above handles the redirect earlier, this is a fallback for rendering.
       return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to login...</p></div>;
     }
   }
   
-  return <AuthContext.Provider value={{ user, loading, signOut }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, loading, signOut: performSignOut, setUser }}>{children}</AuthContext.Provider>;
 };
+

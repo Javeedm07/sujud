@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { updateProfile } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 import AuthenticatedLayout from '@/components/layout/AuthenticatedLayout';
 import { Button } from '@/components/ui/button';
@@ -16,8 +17,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { getUserProfileData, updateUserProfileData } from '@/lib/firestore';
-import { uploadProfileImage } from '@/lib/storage'; // Assuming deleteProfileImageByPath might be used later
-import type { UserProfileData } from '@/lib/types';
+import { uploadProfileImage } from '@/lib/storage'; 
+import type { UserProfileData, User } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Trash2 } from 'lucide-react';
 
@@ -30,7 +31,7 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export default function ProfilePage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, setUser } = useAuth(); // Get setUser from useAuth
   const { toast } = useToast();
   const [pageLoading, setPageLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,8 +39,6 @@ export default function ProfilePage() {
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewURL, setPreviewURL] = useState<string | null>(null);
-  // This flag helps determine if the user explicitly wants to remove the photo,
-  // even if no new file is selected.
   const [photoMarkedForRemoval, setPhotoMarkedForRemoval] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -55,18 +54,15 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setPageLoading(true);
-      // Set initial form values
       form.reset({
-        displayName: user.displayName === "User" ? "" : user.displayName || '', // If "User", show as empty in form
-        // phoneNumber will be set after fetching from Firestore
+        displayName: user.displayName === "User" ? "" : user.displayName || '',
       });
-      // Set initial photo preview
       if (user.photoURL) {
         setPreviewURL(user.photoURL);
       } else {
         setPreviewURL(null);
       }
-      setPhotoMarkedForRemoval(false); // Reset on user change
+      setPhotoMarkedForRemoval(false);
 
       getUserProfileData(user.uid)
         .then((profileData) => {
@@ -90,28 +86,28 @@ export default function ProfilePage() {
       return normalizedName.substring(0, 2).toUpperCase();
     }
     if (email) return email.substring(0, 2).toUpperCase();
-    return "U"; // Default for "User", empty name, or no email
+    return "U"; 
   };
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) { 
         toast({ variant: 'destructive', title: 'File too large', description: 'Profile picture cannot exceed 5MB.' });
         return;
       }
       setSelectedFile(file);
       setPreviewURL(URL.createObjectURL(file));
-      setPhotoMarkedForRemoval(false); // A new file is selected, so not removing
+      setPhotoMarkedForRemoval(false); 
     }
   };
 
   const handleRemovePhoto = () => {
     setSelectedFile(null);
     setPreviewURL(null);
-    setPhotoMarkedForRemoval(true); // Explicitly mark photo for removal
+    setPhotoMarkedForRemoval(true); 
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Clear the file input
+      fileInputRef.current.value = ""; 
     }
   };
 
@@ -123,13 +119,13 @@ export default function ProfilePage() {
     setIsSubmitting(true);
     setIsUploadingImage(false);
 
-    let newPhotoURL: string | null = user.photoURL; // Start with the current photo URL
+    let newPhotoURL: string | null = user.photoURL; 
 
     if (selectedFile) {
       setIsUploadingImage(true);
       try {
         newPhotoURL = await uploadProfileImage(user.uid, selectedFile);
-        setPreviewURL(newPhotoURL); // Update preview to the uploaded one
+        setPreviewURL(newPhotoURL); 
       } catch (uploadError: any) {
         toast({ variant: 'destructive', title: 'Image Upload Failed', description: uploadError.message });
         setIsSubmitting(false);
@@ -138,10 +134,9 @@ export default function ProfilePage() {
       }
       setIsUploadingImage(false);
     } else if (photoMarkedForRemoval) {
-      newPhotoURL = null; // User wants to remove the photo
+      newPhotoURL = null; 
     }
 
-    // Handle display name: default to "User" if empty
     const finalDisplayName = (data.displayName?.trim() === '') ? 'User' : data.displayName;
 
     try {
@@ -150,8 +145,6 @@ export default function ProfilePage() {
       if (finalDisplayName !== user.displayName) {
         authUpdates.displayName = finalDisplayName;
       }
-      // Only update photoURL if it has actually changed from the current user.photoURL
-      // or if it was explicitly marked for removal (newPhotoURL would be null)
       if (newPhotoURL !== user.photoURL) {
          authUpdates.photoURL = newPhotoURL;
       }
@@ -161,7 +154,6 @@ export default function ProfilePage() {
         await updateProfile(user, authUpdates);
       }
 
-      // Update Firestore profile data (phoneNumber)
       const firestoreUpdates: Partial<UserProfileData> = {};
       const currentFirestoreProfile = await getUserProfileData(user.uid);
       if (data.phoneNumber !== (currentFirestoreProfile?.phoneNumber || '')) {
@@ -171,13 +163,15 @@ export default function ProfilePage() {
       if (Object.keys(firestoreUpdates).length > 0) {
           await updateUserProfileData(user.uid, firestoreUpdates);
       }
+      
+      // Refresh AuthContext user state
+      if (auth.currentUser) {
+        setUser({ ...auth.currentUser } as User); // Create new object to trigger re-render
+      }
 
       toast({ title: 'Success', description: 'Profile updated successfully.' });
-      setSelectedFile(null); // Clear selected file after successful upload
-      setPhotoMarkedForRemoval(false); // Reset removal flag
-      // To reflect changes in header immediately, AuthContext might need a way to refresh user
-      // or rely on onAuthStateChanged to pick up auth profile changes.
-      // For now, a page reload or re-navigation would show updated header avatar.
+      setSelectedFile(null); 
+      setPhotoMarkedForRemoval(false);
     } catch (error: any) {
       console.error('Profile update error:', error);
       toast({ variant: 'destructive', title: 'Update Failed', description: error.message });
@@ -196,7 +190,7 @@ export default function ProfilePage() {
           <Skeleton className="h-6 w-2/3 mb-8" />
           <Card>
             <CardHeader className="items-center">
-              <Skeleton className="h-32 w-32 rounded-full mx-auto mb-4" /> {/* Adjusted for larger avatar */}
+              <Skeleton className="h-32 w-32 rounded-full mx-auto mb-4" />
               <Skeleton className="h-6 w-1/2 mx-auto" />
               <Skeleton className="h-4 w-3/4 mx-auto" />
             </CardHeader>
@@ -309,3 +303,4 @@ export default function ProfilePage() {
     </AuthenticatedLayout>
   );
 }
+
