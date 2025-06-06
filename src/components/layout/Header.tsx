@@ -66,7 +66,7 @@ export default function Header() {
                     asChild
                     className={cn(
                       "flex items-center gap-1",
-                      isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary/90"
+                      isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     <Link href={item.href}>
