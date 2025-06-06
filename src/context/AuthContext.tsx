@@ -2,7 +2,7 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState, useCallback } from 'react';
 import { onAuthStateChanged, User as FirebaseUser, signOut as firebaseSignOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import type { User } from '@/lib/types';
@@ -30,29 +30,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
+  const signOut = useCallback(async () => {
+    try {
+      await firebaseSignOut(auth);
+      setUser(null); // Clear user state
+      router.push('/login'); // Redirect to login page
+    } catch (error) {
+      console.error("Error signing out: ", error);
+      // Optionally, show a toast notification for sign-out errors
+    }
+  }, [router]);
+
   useEffect(() => {
-    if (loading) return; // Don't run redirect logic until auth state is determined
+    if (loading) return; 
 
     const isAuthPage = pathname === '/login' || pathname === '/signup';
     const isLandingPage = pathname === '/';
 
-    if (user) { // User is logged in
+    if (user) { 
       if (isAuthPage || isLandingPage) {
-        router.push('/home'); // Redirect from /login, /signup, or / to /home
+        router.push('/home'); 
       }
-      // If user is logged in and on any other authenticated page (e.g., /home, /dashboard), do nothing.
-    } else { // User is NOT logged in
-      // Unauthenticated users should be able to access landing, login, and signup pages.
-      // If they are on any other page, redirect them to login.
+    } else { 
       if (!isLandingPage && !isAuthPage) {
         router.push('/login');
       }
-      // If on landing, login, or signup page, do nothing and allow access.
     }
   }, [user, loading, router, pathname]);
 
 
-  // Handle rendering based on auth state and current path to show loading/redirecting messages
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen bg-background"><p>Loading session...</p></div>;
   }
@@ -60,20 +66,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isAuthPageForRender = pathname === '/login' || pathname === '/signup';
   const isLandingPageForRender = pathname === '/';
 
-  if (user) { // User is logged in
+  if (user) {
     if (isAuthPageForRender || isLandingPageForRender) {
-      // useEffect will redirect. Show a placeholder message.
       return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to Mawaqit...</p></div>;
     }
-  } else { // User is not logged in
-    // If on a protected page (not landing, login, or signup), show redirecting message
+  } else { 
     if (!isLandingPageForRender && !isAuthPageForRender) {
-      // useEffect will redirect. Show a placeholder message.
       return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to login...</p></div>;
     }
   }
 
-  // If no redirect is imminent or user is on an allowed page, render the children
   return <AuthContext.Provider value={{ user, loading, signOut }}>{children}</AuthContext.Provider>;
 };
-
