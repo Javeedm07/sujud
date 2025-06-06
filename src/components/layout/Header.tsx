@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutDashboard, LogOut, CalendarDays } from 'lucide-react';
+import { Home, LayoutDashboard, LogOut, CalendarDays, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -35,9 +35,10 @@ export default function Header() {
   const { user, signOut, loading } = useAuth();
   const pathname = usePathname();
 
-  const getInitials = (email?: string | null) => {
-    if (!email) return "U";
-    return email.substring(0, 2).toUpperCase();
+  const getInitials = (email?: string | null, name?: string | null) => {
+    if (name) return name.substring(0, 2).toUpperCase();
+    if (email) return email.substring(0, 2).toUpperCase();
+    return "U";
   };
 
   const navItems = [
@@ -68,7 +69,7 @@ export default function Header() {
                     asChild
                     className={cn(
                       "flex items-center gap-1",
-                      isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                      isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                     )}
                   >
                     <Link href={item.href}>
@@ -88,7 +89,7 @@ export default function Header() {
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                   <Avatar className="h-9 w-9">
                     <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || "User"} />
-                    <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                    <AvatarFallback>{getInitials(user.email, user.displayName)}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -103,6 +104,13 @@ export default function Header() {
                     </p>
                   </div>
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile" className="flex items-center w-full">
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut}>
                   <LogOut className="mr-2 h-4 w-4" />

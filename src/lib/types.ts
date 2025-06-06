@@ -1,3 +1,4 @@
+
 import type { User as FirebaseUser } from 'firebase/auth';
 
 export interface User extends FirebaseUser {}
@@ -30,4 +31,9 @@ export interface PrayerStat {
   date: string; // Or month, week string
   count: number;
   prayerName?: PrayerName; // For filtering
+}
+
+export interface UserProfileData {
+  phoneNumber?: string;
+  // Add other custom fields here if needed in Firestore user document
 }

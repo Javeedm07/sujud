@@ -1,7 +1,7 @@
 
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy, limit, FirestoreError, DocumentData, serverTimestamp, Timestamp } from 'firebase/firestore';
-import type { DailyPrayers, PrayerName, DailyInspirationContent } from '@/lib/types';
+import type { DailyPrayers, PrayerName, DailyInspirationContent, UserProfileData } from '@/lib/types';
 
 export const PRAYER_NAMES: PrayerName[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
@@ -209,3 +209,32 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
 };
 
 export { getTodayDateString };
+
+// User Profile Data Functions
+export const getUserProfileData = async (userId: string): Promise<UserProfileData | null> => {
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+      const data = userDocSnap.data();
+      return {
+        phoneNumber: data.phoneNumber || '', // Default to empty string if not present
+      };
+    }
+    return null; // Or return default empty profile data
+  } catch (error) {
+    console.error("Error fetching user profile data:", error);
+    throw error;
+  }
+};
+
+export const updateUserProfileData = async (userId: string, data: Partial<UserProfileData>): Promise<void> => {
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    // Use setDoc with merge: true to create the document if it doesn't exist, or update it if it does.
+    await setDoc(userDocRef, data, { merge: true }); 
+  } catch (error) {
+    console.error("Error updating user profile data:", error);
+    throw error;
+  }
+};
