@@ -1,14 +1,13 @@
 
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { useAuth } from '@/hooks/useAuth';
 import { getPrayerStats, PRAYER_NAMES } from '@/lib/firestore';
 import type { PrayerStat, PrayerName } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from '@/components/ui/skeleton';
 
 const COLORS_PIE = ['hsl(var(--accent))', 'hsl(var(--muted))']; // Completed, Missed
@@ -20,66 +19,72 @@ export default function PrayerStats() {
   const [barData, setBarData] = useState<PrayerStat[]>([]);
   const [pieData, setPieData] = useState<{ name: string; value: number }[]>([]);
   const [lineData, setLineData] = useState<PrayerStat[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   
+  const [loadingBar, setLoadingBar] = useState(true);
+  const [loadingPie, setLoadingPie] = useState(true);
+  const [loadingLine, setLoadingLine] = useState(true);
+  
+  const [error, setError] = useState<string | null>(null);
   const [pieFilter, setPieFilter] = useState<PrayerName | 'all'>('all');
 
+  // Effect for Bar and Line charts
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoadingBar(false);
+      setLoadingLine(false);
+      return;
+    }
 
-    const fetchAllStats = async () => {
-      setLoading(true);
+    const fetchBarAndLineData = async () => {
+      setLoadingBar(true);
+      setLoadingLine(true);
       setError(null);
       try {
-        const barStats = await getPrayerStats(user.uid, 'daily', 'all');
+        const [barStats, lineStats] = await Promise.all([
+          getPrayerStats(user.uid, 'daily', 'all'),
+          getPrayerStats(user.uid, 'weekly', 'all')
+        ]);
         // @ts-ignore
         setBarData(barStats);
-
-        const initialPieStats = await getPrayerStats(user.uid, 'monthly', pieFilter);
-         // @ts-ignore
-        setPieData(initialPieStats as { name: string; value: number }[]);
-        
-        const lineStats = await getPrayerStats(user.uid, 'weekly', 'all');
-         // @ts-ignore
+        // @ts-ignore
         setLineData(lineStats);
-
       } catch (err) {
-        console.error("Failed to fetch prayer stats:", err);
-        setError("Could not load prayer statistics. Please try again later.");
+        console.error("Failed to fetch bar/line prayer stats:", err);
+        setError("Could not load some prayer statistics. Please try again later.");
       } finally {
-        setLoading(false);
+        setLoadingBar(false);
+        setLoadingLine(false);
       }
     };
 
-    fetchAllStats();
+    fetchBarAndLineData();
+  }, [user]);
+
+  // Effect for Pie chart
+  useEffect(() => {
+    if (!user) {
+      setLoadingPie(false);
+      return;
+    }
+
+    const fetchPieData = async () => {
+      setLoadingPie(true);
+      setError(null); // Clear previous errors relevant to pie chart
+      try {
+        const initialPieStats = await getPrayerStats(user.uid, 'monthly', pieFilter);
+        // @ts-ignore
+        setPieData(initialPieStats as { name: string; value: number }[]);
+      } catch (err) {
+        console.error("Failed to fetch pie chart stats:", err);
+        setError("Could not load monthly prayer statistics. Please try again later.");
+      } finally {
+        setLoadingPie(false);
+      }
+    };
+
+    fetchPieData();
   }, [user, pieFilter]);
 
-  const handlePieFilterChange = async (value: string) => {
-    if (!user) return;
-    setPieFilter(value as PrayerName | 'all');
-    setLoading(true);
-    try {
-        const newPieStats = await getPrayerStats(user.uid, 'monthly', value as PrayerName | 'all');
-        // @ts-ignore
-        setPieData(newPieStats as { name: string; value: number }[]);
-    } catch (err) {
-        console.error("Failed to fetch pie chart stats:", err);
-        setError("Could not load pie chart statistics.");
-    } finally {
-        setLoading(false);
-    }
-  }
-
-  if (loading) {
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card><CardHeader><Skeleton className="h-6 w-3/4 mb-2" /><Skeleton className="h-4 w-1/2" /></CardHeader><CardContent><Skeleton className="h-64 w-full" /></CardContent></Card>
-            <Card><CardHeader><Skeleton className="h-6 w-3/4 mb-2" /><Skeleton className="h-4 w-1/2" /></CardHeader><CardContent><Skeleton className="h-64 w-full" /></CardContent></Card>
-            <Card className="md:col-span-2"><CardHeader><Skeleton className="h-6 w-3/4 mb-2" /><Skeleton className="h-4 w-1/2" /></CardHeader><CardContent><Skeleton className="h-64 w-full" /></CardContent></Card>
-        </div>
-    );
-  }
 
   if (error) {
     return <Card><CardHeader><CardTitle>Error</CardTitle></CardHeader><CardContent><p className="text-destructive">{error}</p></CardContent></Card>;
@@ -93,29 +98,31 @@ export default function PrayerStats() {
             <CardDescription>Total prayers marked as completed each day.</CardDescription>
             </CardHeader>
             <CardContent>
-            {barData.length > 0 ? (
+            {loadingBar ? (
+                <Skeleton className="h-[300px] w-full" />
+            ) : barData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={barData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" tickFormatter={(tick) => new Date(tick).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} stroke="hsl(var(--muted-foreground))" />
-                    <YAxis allowDecimals={false} stroke="hsl(var(--muted-foreground))" domain={[0, 5]} />
+                    <YAxis allowDecimals={false} stroke="hsl(var(--muted-foreground))" domain={[0, 5]} ticks={[0,1,2,3,4,5]} />
                     <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} labelStyle={{ color: 'hsl(var(--foreground))' }} itemStyle={{ color: BAR_COLOR }} />
                     <Bar dataKey="count" fill={BAR_COLOR} name="Completed Prayers" radius={[4, 4, 0, 0]} />
                 </BarChart>
                 </ResponsiveContainer>
-            ) : <p>No data available for the bar chart.</p>}
+            ) : <p className="text-muted-foreground">No data available for daily prayer completion.</p>}
             </CardContent>
         </Card>
 
         <Card className="shadow-lg">
             <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                 <div>
                     <CardTitle className="font-headline text-primary">Monthly Prayer Completion</CardTitle>
                     <CardDescription>Overall percentage for the last 30 days.</CardDescription>
                 </div>
-                <Select value={pieFilter} onValueChange={handlePieFilterChange}>
-                    <SelectTrigger className="w-[180px]">
+                <Select value={pieFilter} onValueChange={(value) => setPieFilter(value as PrayerName | 'all')}>
+                    <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue placeholder="Filter by prayer" />
                     </SelectTrigger>
                     <SelectContent>
@@ -126,7 +133,9 @@ export default function PrayerStats() {
             </div>
             </CardHeader>
             <CardContent>
-            {(pieData.length > 0 && pieData.some(d => d.value > 0)) ? (
+            {loadingPie ? (
+                 <Skeleton className="h-[300px] w-full" />
+            ) : (pieData.length > 0 && pieData.some(d => d.value > 0)) ? (
                 <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                     <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
@@ -138,7 +147,7 @@ export default function PrayerStats() {
                     <Legend />
                 </PieChart>
                 </ResponsiveContainer>
-            ) : <p>No data available for the pie chart or all values are zero.</p>}
+            ) : <p className="text-muted-foreground">No data available for monthly prayer completion or all values are zero.</p>}
             </CardContent>
         </Card>
         
@@ -148,7 +157,9 @@ export default function PrayerStats() {
             <CardDescription>Total prayers completed week over week.</CardDescription>
             </CardHeader>
             <CardContent>
-            {lineData.length > 0 ? (
+            {loadingLine ? (
+                <Skeleton className="h-[300px] w-full" />
+            ) : lineData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={lineData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -158,7 +169,7 @@ export default function PrayerStats() {
                     <Line type="monotone" dataKey="count" stroke={LINE_COLOR} strokeWidth={2} name="Completed Prayers" dot={{ r: 4, fill: LINE_COLOR }} activeDot={{ r: 6 }}/>
                 </LineChart>
                 </ResponsiveContainer>
-            ): <p>No data available for the line chart.</p>}
+            ): <p className="text-muted-foreground">No data available for weekly prayer consistency.</p>}
             </CardContent>
         </Card>
     </div>
