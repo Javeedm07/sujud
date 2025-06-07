@@ -18,7 +18,7 @@ export default function LoadingSpinner({ className, size = "md" }: LoadingSpinne
   return (
     <div
       className={cn(
-        "animate-spin rounded-full border-solid border-primary border-t-transparent",
+        "rounded-full border-solid border-primary border-t-transparent animate-spin-slow", // Use animate-spin-slow
         sizeClasses[size],
         className
       )}

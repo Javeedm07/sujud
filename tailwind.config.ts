@@ -88,10 +88,16 @@ export default {
             height: '0',
           },
         },
+        spin: { // Ensuring spin keyframe is available if needed by custom animation
+          to: {
+            transform: 'rotate(360deg)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'spin-slow': 'spin 3s linear infinite', // New slower spin animation
       },
     },
   },
