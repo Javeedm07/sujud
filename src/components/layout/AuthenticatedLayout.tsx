@@ -6,6 +6,7 @@ import Header from './Header';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import FullScreenLoader from './FullScreenLoader'; // Import the loader
 
 export default function AuthenticatedLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -18,8 +19,8 @@ export default function AuthenticatedLayout({ children }: { children: ReactNode 
   }, [user, loading, router]);
 
   if (loading || !user) {
-    // You can render a global loader here, or null if AuthContext handles it
-    return <div className="flex items-center justify-center min-h-screen bg-background"><p>Loading user data...</p></div>;
+    // Use FullScreenLoader for the loading state
+    return <FullScreenLoader message="Loading user data..." />;
   }
 
   return (

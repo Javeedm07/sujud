@@ -7,6 +7,7 @@ import { onAuthStateChanged, User as FirebaseUser, signOut as firebaseSignOut } 
 import { auth } from '@/lib/firebase';
 import type { User } from '@/lib/types';
 import { useRouter, usePathname } from 'next/navigation';
+import FullScreenLoader from '@/components/layout/FullScreenLoader'; // Import the loader
 
 export interface AuthContextType {
   user: User | null;
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen bg-background"><p>Loading session...</p></div>;
+    return <FullScreenLoader message="Loading session..." />;
   }
 
   const isAuthPageForRender = pathname === '/login' || pathname === '/signup';
@@ -69,15 +70,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   if (user) {
     // If user is logged in AND on an auth page, show loading/redirecting message
     if (isAuthPageForRender) { 
-      return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to SUJUD...</p></div>;
+      return <FullScreenLoader message="Redirecting to SUJUD..." />;
     }
   } else { 
     // If user is NOT logged in AND NOT on landing/auth page, show loading/redirecting
     if (!isLandingPageForRender && !isAuthPageForRender) {
-      return <div className="flex items-center justify-center min-h-screen bg-background"><p>Redirecting to login...</p></div>;
+      return <FullScreenLoader message="Redirecting to login..." />;
     }
   }
   
   return <AuthContext.Provider value={{ user, loading, signOut: performSignOut, setUser }}>{children}</AuthContext.Provider>;
 };
-
