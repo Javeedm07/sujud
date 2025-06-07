@@ -1,5 +1,6 @@
 
 import type { User as FirebaseUser } from 'firebase/auth';
+import type { Timestamp } from 'firebase/firestore';
 
 export interface User extends FirebaseUser {}
 
@@ -25,6 +26,8 @@ export interface DailyInspirationContent {
   type: 'quote' | 'verse';
   content: string;
   source: string;
+  category?: string; // Optional category
+  dateAdded?: Date | Timestamp; // Date when the inspiration was added
 }
 
 export interface PrayerStat {
