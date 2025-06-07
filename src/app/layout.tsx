@@ -1,10 +1,8 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-// Removed AuthProvider import, AppProviders will handle it
-import { Toaster } from '@/components/ui/toaster';
 import AppProviders from '@/components/AppProviders';
-import { ThemeProvider } from 'next-themes'; // Import ThemeProvider
+import { ThemeProvider } from 'next-themes';
 
 export const metadata: Metadata = {
   title: 'SUJUD - Your Personal Namaz Companion',
@@ -27,7 +25,6 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <AppProviders>
             {children}
-            {/* Toaster is now managed within AppProviders or remains here if preferred, but AppProviders is cleaner */}
           </AppProviders>
         </ThemeProvider>
       </body>
