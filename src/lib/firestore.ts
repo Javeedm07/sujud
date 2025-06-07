@@ -5,7 +5,7 @@ import type { DailyPrayers, PrayerName, DailyInspirationContent, UserProfileData
 
 export const PRAYER_NAMES: PrayerName[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
-const getTodayDateString = (): string => {
+export const getTodayDateString = (): string => {
   const today = new Date();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -84,27 +84,51 @@ export const updatePrayerStatus = async (userId: string, date: string, prayerNam
 };
 
 
-export const fetchDailyInspiration = async (): Promise<DailyInspirationContent | null> => {
+export const fetchDailyInspiration = async (): Promise<DailyInspirationContent> => {
   try {
     const inspirationsColRef = collection(db, 'daily_inspirations');
-    const q = query(inspirationsColRef); 
-    const querySnapshot = await getDocs(q);
-    
+    let querySnapshot = await getDocs(inspirationsColRef); 
+
     if (querySnapshot.empty) {
-      await seedDailyInspirations();
-      const seededSnapshot = await getDocs(q);
-      if (seededSnapshot.empty) return null;
-      
-      const inspirations = seededSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as DailyInspirationContent));
-      return inspirations[Math.floor(Math.random() * inspirations.length)];
+      await seedDailyInspirations(); 
+      querySnapshot = await getDocs(inspirationsColRef); 
+      if (querySnapshot.empty) {
+        console.warn("Daily inspirations collection still empty after seeding.");
+        return { 
+          id: 'fallback_seed_empty',
+          type: 'quote',
+          content: "Strive for that which will benefit you, seek help from Allah, and do not give up.",
+          source: "Prophet Muhammad (pbuh)"
+        };
+      }
     }
 
     const inspirations = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as DailyInspirationContent));
-    return inspirations[Math.floor(Math.random() * inspirations.length)];
+
+    if (inspirations.length === 0) {
+        console.warn("No inspirations found in the collection array.");
+        return { 
+            id: 'fallback_no_inspirations_in_array',
+            type: 'quote',
+            content: "Patience is a key that opens the door to relief and joy.",
+            source: "Islamic Proverb"
+        };
+    }
+
+    // Make selection deterministic based on the day of the year
+    const today = new Date();
+    const startOfYear = new Date(today.getFullYear(), 0, 0); // Day 0 of the year
+    const diff = today.getTime() - startOfYear.getTime();
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay); // dayOfYear is 1-indexed for Jan 1st
+
+    const selectedInspiration = inspirations[ (dayOfYear -1 ) % inspirations.length]; // Use (dayOfYear - 1) for 0-based array index
+    return selectedInspiration;
+
   } catch (error) {
     console.error("Error fetching daily inspiration:", error);
-    return {
-      id: 'fallback',
+    return { 
+      id: 'fallback_error',
       type: 'quote',
       content: "The best of deeds are those that are consistent, even if they are few.",
       source: "Prophet Muhammad (peace be upon him)"
@@ -113,20 +137,28 @@ export const fetchDailyInspiration = async (): Promise<DailyInspirationContent |
 };
 
 const seedDailyInspirations = async () => {
-  const inspirations = [
+  const inspirationsData = [
     { type: 'verse', content: "Indeed, with hardship [will be] ease.", source: "Quran 94:6" },
     { type: 'quote', content: "The world is a prison for the believer and a paradise for the disbeliever.", source: "Hadith Muslim" },
     { type: 'verse', content: "And seek help through patience and prayer, and indeed, it is difficult except for the humbly submissive [to Allah].", source: "Quran 2:45" },
     { type: 'quote', content: "Do not lose hope, nor be sad.", source: "Quran 3:139 (paraphrased)" },
     { type: 'verse', content: "So remember Me; I will remember you. And be grateful to Me and do not deny Me.", source: "Quran 2:152" },
+    { type: 'quote', content: "He who desires the world, and its riches, should learn Ilm (knowledge). He who desires the Aakhirah (Hereafter), should learn Ilm.", source: "Imam Shafi'i" },
+    { type: 'verse', content: "And whoever fears Allah - He will make for him a way out and will provide for him from where he does not expect.", source: "Quran 65:2-3" },
   ];
 
   const inspirationsColRef = collection(db, 'daily_inspirations');
-  for (const insp of inspirations) {
-    const docRef = doc(inspirationsColRef, insp.content.substring(0,20).replace(/ /g, '_')); 
-    await setDoc(docRef, insp);
+  for (const insp of inspirationsData) {
+    // Use a more unique ID, e.g., hash of content or a dedicated ID field if managing externally
+    const docId = insp.content.substring(0, 20).replace(/\s+/g, '_').replace(/[^\w]/gi, '');
+    const docRef = doc(inspirationsColRef, docId || `insp_${Math.random().toString(36).substring(7)}`); 
+    try {
+        await setDoc(docRef, insp);
+    } catch (e) {
+        console.error("Error seeding inspiration: ", insp.content, e);
+    }
   }
-  console.log("Daily inspirations seeded.");
+  console.log("Daily inspirations seeded or updated.");
 };
 
 export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' | 'monthly', filter?: PrayerName | 'all'): Promise<DocumentData[]> => {
@@ -182,7 +214,7 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
       prayerData.push({ name: 'Completed', value: completedPrayers });
       prayerData.push({ name: 'Missed', value: totalPrayers - completedPrayers });
      } else {
-      prayerData.push({ name: 'No Data', value: 1 });
+      prayerData.push({ name: 'No Data', value: 1 }); // Represents 100% "No Data" segment
      }
 
   } else if (period === 'weekly') {
@@ -208,7 +240,6 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
   return prayerData;
 };
 
-export { getTodayDateString };
 
 // User Profile Data Functions
 export const getUserProfileData = async (userId: string): Promise<UserProfileData | null> => {
