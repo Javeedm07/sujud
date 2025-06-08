@@ -33,7 +33,7 @@ export default function LoginPage() {
         errorMessage = error.message;
       }
       toast({ variant: 'destructive', title: 'Login Failed', description: errorMessage });
-      console.error('Login error:', error);
+      // console.error('Login error:', error); // Removed to prevent Next.js overlay for this handled error
     } finally {
       setLoading(false);
     }
