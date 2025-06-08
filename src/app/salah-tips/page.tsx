@@ -1,7 +1,8 @@
 
 import AuthenticatedLayout from '@/components/layout/AuthenticatedLayout';
-import SalahTipsList from '@/components/mawaqit/SalahTipsList';
-import { BookOpenCheck } from 'lucide-react';
+// SalahTipsList import removed
+import { BookOpenCheck, Construction } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function SalahTipsPage() {
   return (
@@ -15,7 +16,20 @@ export default function SalahTipsPage() {
             Discover insights and practices to enhance the quantity and quality of your prayers.
           </p>
         </div>
-        <SalahTipsList />
+        
+        <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
+          <CardHeader className="flex flex-row items-center gap-3 space-y-0">
+            <Construction size={28} className="text-primary" />
+            <CardTitle className="text-2xl font-headline text-primary">Coming Soon!</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="text-base">
+              We're working hard to bring you a collection of insightful tips and best practices to help enhance your Salah, both in quantity and quality.
+              Please check back later!
+            </CardDescription>
+          </CardContent>
+        </Card>
+        {/* <SalahTipsList /> Replaced by the Coming Soon card */}
       </div>
     </AuthenticatedLayout>
   );
