@@ -107,6 +107,10 @@ function ResetPasswordComponent() {
         errorMessage = 'The new password is too weak.';
       } else if (err.code === 'auth/invalid-action-code') {
         errorMessage = 'The password reset link is invalid or has expired. Please request a new one.';
+      } else if (err.code === 'auth/user-disabled') {
+         errorMessage = 'This account has been disabled.';
+      } else if (err.code === 'auth/user-not-found') {
+         errorMessage = 'No user found corresponding to this reset code.';
       }
       setError(errorMessage);
       toast({ variant: 'destructive', title: 'Reset Failed', description: errorMessage });
