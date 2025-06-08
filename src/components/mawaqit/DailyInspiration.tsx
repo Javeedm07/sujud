@@ -78,7 +78,7 @@ export default function DailyInspiration() {
 
   if (loading) {
     return (
-      <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
+      <Card className="bg-card/80 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="text-xl font-headline text-primary flex items-center gap-2">
             <BookOpenText size={24} /> Daily Inspiration
@@ -94,7 +94,7 @@ export default function DailyInspiration() {
 
   if (error && !inspiration) { // Show error only if there's no inspiration to display
     return (
-      <Card className="shadow-lg bg-destructive/10 text-destructive-foreground">
+      <Card className="bg-destructive/10 text-destructive-foreground">
         <CardHeader>
           <CardTitle className="text-xl font-headline flex items-center gap-2">
             <AlertTriangle size={24} /> Error
@@ -109,7 +109,7 @@ export default function DailyInspiration() {
   
   if (!inspiration) { // Fallback if inspiration is null for any reason (e.g. initial error before any load)
      return (
-      <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
+      <Card className="bg-card/80 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="text-xl font-headline text-primary flex items-center gap-2">
             <BookOpenText size={24} /> Daily Inspiration
@@ -124,7 +124,7 @@ export default function DailyInspiration() {
 
 
   return (
-    <Card className="shadow-lg bg-card/80 backdrop-blur-sm transform hover:scale-[1.01] transition-transform duration-300 ease-out">
+    <Card className="bg-card/80 backdrop-blur-sm transform hover:scale-[1.01] transition-transform duration-300 ease-out">
       <CardHeader>
         <CardTitle className="text-xl font-headline text-primary flex items-center gap-2">
           <BookOpenText size={24} /> Daily Inspiration

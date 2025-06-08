@@ -83,15 +83,9 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     }
   };
   
-  // const userName = user?.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' ? user.displayName : 'User';
-  // const isToday = initialDateString === getTodayDateString() || !initialDateString;
-  // const cardTitleText = isToday
-  //   ? `Assalam alaikum ${userName}`
-  //   : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`;
-
   if (loading) {
     return (
-      <Card className="shadow-lg">
+      <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-headline text-primary">
             Salah Tracker
@@ -113,7 +107,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
 
   if (error) {
     return (
-      <Card className="shadow-lg">
+      <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-headline text-destructive">Error</CardTitle>
         </CardHeader>
@@ -127,7 +121,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
   
   if (!prayers) {
      return (
-      <Card className="shadow-lg">
+      <Card>
         <CardHeader>
            <CardTitle className="text-2xl font-headline text-primary">
             Salah Tracker
@@ -140,7 +134,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
   }
 
   return (
-    <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
+    <Card className="bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-2xl font-headline text-primary">
           Salah Tracker
@@ -178,4 +172,3 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     </Card>
   );
 }
-
