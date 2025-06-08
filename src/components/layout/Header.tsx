@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutDashboard, LogOut, CalendarDays, UserCircle, Wand2 } from 'lucide-react';
+import { Home, LayoutDashboard, LogOut, UserCircle, Wand2 } from 'lucide-react'; // Removed CalendarDays
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -53,7 +53,7 @@ export default function Header() {
   const navItems = [
     { href: "/home", label: "Home", icon: Home },
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/prayer-history", label: "History", icon: CalendarDays },
+    // { href: "/prayer-history", label: "History", icon: CalendarDays }, // Removed
     { href: "/verse-suggestion", label: "Verse Suggestion", icon: Wand2 },
   ];
 
