@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"; // Added SheetTitle
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import React, { useState } from 'react';
@@ -80,7 +80,7 @@ export default function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col p-0">
-                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                  <SheetTitle className="sr-only">Main Navigation Menu</SheetTitle>
                   {/* Sheet Header */}
                   <div className="p-4 border-b border-border">
                     <Link href="/home" className="flex items-center gap-2" onClick={() => setIsSheetOpen(false)}>
@@ -100,7 +100,7 @@ export default function Header() {
                           asChild
                           className={cn(
                             "w-full justify-start text-base py-2.5 px-3",
-                            isActive ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:text-primary hover:bg-accent/50"
+                            isActive ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-primary/10 hover:text-primary"
                           )}
                           onClick={() => setIsSheetOpen(false)}
                         >
