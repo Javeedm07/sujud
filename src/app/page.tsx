@@ -46,16 +46,16 @@ export default function LandingPage() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="py-20 md:py-32 bg-background text-center">
+        <section className="py-20 md:py-32 text-center bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA]">
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-6xl font-bold font-headline text-primary mb-6">
-              SUJUD: Your Personal Companion for Consistent Prayer
+            <h1 className="text-4xl md:text-6xl font-bold font-headline text-white mb-6">
+              Personal companion in your daily salah:
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto">
-              Track your daily Salah, find daily inspiration, and deepen your connection through personalized Quranic guidance. Stay mindful, stay consistent.
+            <p className="text-lg md:text-xl text-gray-100 mb-10 max-w-3xl mx-auto">
+              Let Sujud help you build consistency in your daily salah.
             </p>
-            <Button size="lg" asChild className="shadow-lg hover:shadow-xl transition-shadow">
-              <Link href="/signup">Get Started Free <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            <Button size="lg" variant="secondary" asChild className="shadow-lg hover:shadow-xl transition-shadow">
+              <Link href="/signup" className="text-primary">Get started for free <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
             <div className="mt-12 rounded-lg overflow-hidden shadow-2xl max-w-4xl mx-auto">
               <Image
