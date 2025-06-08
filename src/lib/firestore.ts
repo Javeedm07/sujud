@@ -1,7 +1,7 @@
 
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy, limit, FirestoreError, DocumentData, serverTimestamp, Timestamp } from 'firebase/firestore';
-import type { DailyPrayers, PrayerName, PrayerStatus, PrayerDetails } from '@/lib/types';
+import type { DailyPrayers, PrayerName, PrayerStatus, PrayerDetails, UserProfileData } from '@/lib/types';
 
 export const PRAYER_NAMES: PrayerName[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
@@ -26,7 +26,7 @@ export const getDailyPrayers = async (userId: string, date: string): Promise<Dai
     const prayerDocSnap = await getDoc(prayerDocRef);
 
     if (prayerDocSnap.exists()) {
-      const data = prayerDocSnap.data() as any; 
+      const data = prayerDocSnap.data() as any;
       const newSchemaPrayers: DailyPrayers = {
         date: data.date || date,
         Fajr: { status: 'NOT_MARKED', timestamp: null },
@@ -37,15 +37,16 @@ export const getDailyPrayers = async (userId: string, date: string): Promise<Dai
       };
 
       PRAYER_NAMES.forEach(name => {
-        const prayerData = data[name]; 
+        const prayerData = data[name];
         let currentStatus: PrayerStatus = 'NOT_MARKED';
         let currentTimestamp: Date | null = null;
 
-        if (prayerData && prayerData.status) { 
-          currentStatus = prayerData.status as PrayerStatus;
-          if (prayerData.timestamp && prayerData.timestamp instanceof Timestamp) {
-            currentTimestamp = prayerData.timestamp.toDate();
-          }
+        // Expecting new schema: { status: PrayerStatus, timestamp?: Date | null }
+        if (prayerData && typeof prayerData.status === 'string') {
+            currentStatus = prayerData.status as PrayerStatus;
+            if (prayerData.timestamp && prayerData.timestamp instanceof Timestamp) {
+                currentTimestamp = prayerData.timestamp.toDate();
+            }
         }
         newSchemaPrayers[name] = { status: currentStatus, timestamp: currentTimestamp };
       });
@@ -120,50 +121,49 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
       }
       prayerData.push({ date: dateString, count: prayedCount });
     }
-  }
-  else if (period === 'monthly' && filter) {
-     let prayedCount = 0;
-     let notPrayedCount = 0;
-     let notMarkedCount = 0;
+  } else if (period === 'monthly' && filter) {
+    let prayedCount = 0;
+    let notPrayedCount = 0;
+    let notMarkedCount = 0;
 
-     for (let i = 29; i >= 0; i--) { // Iterate over the last 30 days
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const dateString = convertDateToYYYYMMDD(date);
-        const dailyPrayersDocSnap = await getDoc(doc(db, 'users', userId, 'prayers', dateString));
+    for (let i = 29; i >= 0; i--) { // Iterate over the last 30 days
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const dateString = convertDateToYYYYMMDD(date);
+      const dailyPrayersDocSnap = await getDoc(doc(db, 'users', userId, 'prayers', dateString));
 
-        if (dailyPrayersDocSnap.exists()) {
-            const data = dailyPrayersDocSnap.data() as DailyPrayers;
-            if (filter === 'all') {
-                PRAYER_NAMES.forEach(name => {
-                    const prayerDetails = data[name];
-                    if (prayerDetails?.status === 'PRAYED') {
-                        prayedCount++;
-                    } else if (prayerDetails?.status === 'NOT_PRAYED') {
-                        notPrayedCount++;
-                    } else { // Includes NOT_MARKED and cases where status might be missing
-                        notMarkedCount++;
-                    }
-                });
-            } else { // Specific prayer filter
-                const prayerDetails = data[filter as PrayerName];
-                if (prayerDetails?.status === 'PRAYED') {
-                    prayedCount++;
-                } else if (prayerDetails?.status === 'NOT_PRAYED') {
-                    notPrayedCount++;
-                } else {
-                    notMarkedCount++;
-                }
+      if (dailyPrayersDocSnap.exists()) {
+        const data = dailyPrayersDocSnap.data() as DailyPrayers;
+        if (filter === 'all') {
+          PRAYER_NAMES.forEach(name => {
+            const prayerDetails = data[name];
+            if (prayerDetails?.status === 'PRAYED') {
+              prayedCount++;
+            } else if (prayerDetails?.status === 'NOT_PRAYED') {
+              notPrayedCount++;
+            } else { // Includes NOT_MARKED and cases where status might be missing
+              notMarkedCount++;
             }
-        } else { // Document for the day does not exist
-            if (filter === 'all') {
-                notMarkedCount += PRAYER_NAMES.length; // All 5 prayers are 'Not Marked'
-            } else {
-                notMarkedCount++; // The specific prayer is 'Not Marked'
-            }
+          });
+        } else { // Specific prayer filter
+          const prayerDetails = data[filter as PrayerName];
+          if (prayerDetails?.status === 'PRAYED') {
+            prayedCount++;
+          } else if (prayerDetails?.status === 'NOT_PRAYED') {
+            notPrayedCount++;
+          } else {
+            notMarkedCount++;
+          }
         }
-     }
-     
+      } else { // Document for the day does not exist
+        if (filter === 'all') {
+          notMarkedCount += PRAYER_NAMES.length; // All 5 prayers are 'Not Marked'
+        } else {
+          notMarkedCount++; // The specific prayer is 'Not Marked'
+        }
+      }
+    }
+
     prayerData.push({ name: 'Prayed', value: prayedCount });
     prayerData.push({ name: 'Not Prayed', value: notPrayedCount });
     prayerData.push({ name: 'Not Marked', value: notMarkedCount });
@@ -187,7 +187,7 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
       }
       const weekEndDate = new Date(today);
       weekEndDate.setDate(today.getDate() - (week * 7));
-      const weekLabel = `Week ${4-week}`; 
+      const weekLabel = `Week ${4-week}`;
       prayerData.push({ week: weekLabel, count: weeklyPrayedCount });
     }
   }
@@ -203,6 +203,7 @@ export const getUserProfileData = async (userId: string): Promise<UserProfileDat
       const data = userDocSnap.data();
       return {
         displayName: data.displayName || '',
+        email: data.email || '', // Fetch email
         phoneNumber: data.phoneNumber || '',
       };
     }
@@ -222,8 +223,3 @@ export const updateUserProfileData = async (userId: string, data: Partial<UserPr
     throw error;
   }
 };
-
-export interface UserProfileData {
-  displayName?: string; 
-  phoneNumber?: string;
-}

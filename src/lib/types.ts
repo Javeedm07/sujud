@@ -29,6 +29,7 @@ export interface PrayerStat {
 }
 
 export interface UserProfileData {
-  displayName?: string; 
+  displayName?: string;
+  email?: string; // Added email field
   phoneNumber?: string;
 }

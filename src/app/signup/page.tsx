@@ -34,8 +34,8 @@ export default function SignupPage() {
       // Update Firebase Auth display name
       await updateProfile(user, { displayName: values.name });
       
-      // Update Firestore user profile data
-      await updateUserProfileData(user.uid, { displayName: values.name });
+      // Update Firestore user profile data with name and email
+      await updateUserProfileData(user.uid, { displayName: values.name, email: user.email || values.email });
 
       toast({ title: 'Success', description: 'Account created successfully.' });
       router.push('/home'); // Redirect to /home
@@ -56,4 +56,3 @@ export default function SignupPage() {
     />
   );
 }
-
