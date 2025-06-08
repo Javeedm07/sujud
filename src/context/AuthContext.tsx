@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [router]);
 
-  const publicAuthPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
+  const publicAuthPaths = ['/login', '/signup', '/forgot-password'];
   const landingPagePath = '/';
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (user) { // User is authenticated
       if (publicAuthPaths.includes(pathname)) {
-        // If logged in and on a public auth page (login, signup, forgot-password, reset-password), redirect to home
+        // If logged in and on a public auth page (login, signup, forgot-password), redirect to home
         router.push('/home');
       }
     } else { // User is NOT authenticated
@@ -83,6 +83,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return <AuthContext.Provider value={{ user, loading, signOut: performSignOut, setUser }}>{children}</AuthContext.Provider>;
 };
-
-
-    
