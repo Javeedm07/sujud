@@ -34,6 +34,12 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
   
   const [dateStringForChecklist, setDateStringForChecklist] = useState(initialDateString || getTodayDateString());
 
+  const userName = user?.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== ''
+    ? user.displayName
+    : 'User';
+
+  const isToday = dateStringForChecklist === getTodayDateString();
+
   useEffect(() => {
     setDateStringForChecklist(initialDateString || getTodayDateString());
   }, [initialDateString]);
@@ -137,10 +143,13 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     <Card className="bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-2xl font-headline text-primary">
-          Salah Tracker
+          {isToday ? `Assalam alaikum, ${userName}` : `Salah Tracker`}
         </CardTitle>
         <CardDescription>
-          Check off your salah for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.
+          {isToday
+            ? `Check off your salah for today, ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
+            : `Check off your salah for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
+          }
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -150,10 +159,10 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
           return (
             <div
               key={prayerName}
-              className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 ease-in-out border ${isCompleted ? 'bg-accent/30 border-accent/50' : 'bg-card hover:bg-secondary/50'}`}
+              className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 ease-in-out border ${isCompleted ? 'bg-primary/10 border-primary/50' : 'bg-card hover:bg-secondary/50'}`}
             >
               <div className="flex items-center space-x-3">
-                <Icon className={`w-6 h-6 ${isCompleted ? 'text-accent' : 'text-primary/70'}`} />
+                <Icon className={`w-6 h-6 ${isCompleted ? 'text-primary' : 'text-primary/70'}`} />
                 <Label htmlFor={`${prayerName}-${dateStringForChecklist}`} className={`text-lg ${isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                   {prayerName}
                 </Label>
@@ -163,7 +172,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
                 checked={isCompleted}
                 onCheckedChange={(checked) => handlePrayerToggle(prayerName, Boolean(checked))}
                 aria-label={`Mark ${prayerName} as ${isCompleted ? 'pending' : 'completed'}`}
-                className="h-6 w-6 rounded-md data-[state=checked]:bg-accent data-[state=checked]:border-accent-foreground border-primary/50"
+                className="h-6 w-6 rounded-md data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary border-primary/50"
               />
             </div>
           );
