@@ -13,31 +13,31 @@ export default function LandingPage() {
   const features = [
     {
       icon: <CheckSquare className="h-10 w-10 text-primary" />,
-      title: "Daily Prayer Checklist",
+      title: "Daily prayer checklist",
       description: "Easily mark your five daily prayers. Stay accountable and build a consistent habit.",
     },
     {
+      icon: <BarChart3 className="h-10 w-10 text-primary" />,
+      title: "Track your progress",
+      description: "Visualize your prayer consistency over time with insightful statistics and charts.",
+    },
+    {
       icon: <Sparkles className="h-10 w-10 text-primary" />,
-      title: "Daily Inspiration",
+      title: "Daily inspiration",
       description: "Start your day with uplifting Islamic quotes and verses from the Quran to enlighten your path.",
     },
     {
       icon: <BookOpenText className="h-10 w-10 text-primary" />,
-      title: "Personalized Verse Suggestion",
+      title: "Personalized verse suggestion",
       description: "Facing a challenge? Share your thoughts and receive relevant Quranic verses for guidance and comfort.",
-    },
-    {
-      icon: <BarChart3 className="h-10 w-10 text-primary" />,
-      title: "Track Your Progress",
-      description: "Visualize your prayer consistency over time with insightful statistics and charts.",
     },
   ];
 
   const howItWorksSteps = [
-    { title: "Sign Up for Free", description: "Create your SUJUD account in seconds and start your journey." },
-    { title: "Track Your Prayers", description: "Use the intuitive daily checklist to mark your completed Salah." },
-    { title: "Seek Guidance", description: "Explore daily inspirations and get personalized Quranic verses." },
-    { title: "Observe Your Growth", description: "Monitor your progress and consistency on your personal dashboard." },
+    { title: "Sign up for free", description: "Create your SUJUD account in seconds and start your journey." },
+    { title: "Track your prayers", description: "Use the intuitive daily checklist to mark your completed Salah." },
+    { title: "Seek guidance", description: "Explore daily inspirations and get personalized Quranic verses." },
+    { title: "Observe your growth", description: "Monitor your progress and consistency on your personal dashboard." },
   ];
 
   return (
@@ -57,15 +57,14 @@ export default function LandingPage() {
             <Button size="lg" variant="secondary" asChild className="shadow-lg hover:shadow-xl transition-shadow">
               <Link href="/signup" className="text-primary">Get started for free <ArrowRight className="ml-2 h-5 w-5 text-primary" /></Link>
             </Button>
-            {/* Image removed from here */}
           </div>
         </section>
 
         {/* Features Section */}
         <section id="features" className="py-16 md:py-24 bg-secondary/30">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline text-center text-primary mb-16">
-              Everything You Need for a Fulfilling Prayer Journey
+            <h2 className="text-3xl md:text-4xl font-bold font-headline text-center text-foreground mb-16">
+              Everything you need for a fulfilling prayer journey
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {features.map((feature, index) => (
@@ -87,7 +86,7 @@ export default function LandingPage() {
         <section id="how-it-works" className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-center text-primary mb-16">
-              Simple Steps to Spiritual Growth
+              Simple steps to spiritual growth
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {howItWorksSteps.map((step, index) => (
@@ -107,7 +106,7 @@ export default function LandingPage() {
         <section id="testimonials" className="py-16 md:py-24 bg-secondary/30">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-center text-primary mb-16">
-              Loved by Muslims Like You
+              Loved by Muslims like you
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
@@ -131,7 +130,7 @@ export default function LandingPage() {
         <section className="py-20 md:py-32 bg-primary text-center">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary-foreground mb-6">
-              Embark on Your Path to Consistent Prayer Today
+              Embark on your path to consistent prayer today
             </h2>
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
               Join SUJUD and transform your spiritual routine. It's free to start, and the rewards are eternal.
