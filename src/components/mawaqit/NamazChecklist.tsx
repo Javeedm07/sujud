@@ -32,10 +32,8 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Use a state for the date string, initialized by prop or today's date
   const [dateStringForChecklist, setDateStringForChecklist] = useState(initialDateString || getTodayDateString());
 
-  // Update internal dateString if the prop changes
   useEffect(() => {
     setDateStringForChecklist(initialDateString || getTodayDateString());
   }, [initialDateString]);
@@ -60,7 +58,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     if (user && dateStringForChecklist) {
       fetchPrayers();
     }
-  }, [fetchPrayers, user, dateStringForChecklist]); // Ensure fetchPrayers is called when dateStringForChecklist changes
+  }, [fetchPrayers, user, dateStringForChecklist]);
 
   const handlePrayerToggle = async (prayerName: PrayerName, checked: boolean) => {
     if (!user || !prayers) return;
@@ -85,12 +83,18 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     }
   };
   
+  const userName = user?.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' ? user.displayName : 'User';
+  const isToday = initialDateString === getTodayDateString() || !initialDateString;
+  const cardTitleText = isToday
+    ? `Assalam alaikum ${userName}`
+    : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`;
+
   if (loading) {
     return (
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-headline text-primary">
-            {initialDateString === getTodayDateString() || !initialDateString ? "Today's Prayers" : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`}
+            {cardTitleText}
           </CardTitle>
           <CardDescription>Loading your prayer checklist for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}...</CardDescription>
         </CardHeader>
@@ -126,7 +130,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
       <Card className="shadow-lg">
         <CardHeader>
            <CardTitle className="text-2xl font-headline text-primary">
-            {initialDateString === getTodayDateString() || !initialDateString ? "Today's Prayers" : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`}
+            {cardTitleText}
            </CardTitle>
            <CardDescription>No prayer data found for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.</CardDescription>
         </CardHeader>
@@ -139,7 +143,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-2xl font-headline text-primary">
-          {initialDateString === getTodayDateString() || !initialDateString ? "Today's Prayers" : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`}
+          {cardTitleText}
         </CardTitle>
         <CardDescription>
           Check off your prayers for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.
