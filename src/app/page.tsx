@@ -46,17 +46,40 @@ export default function LandingPage() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="py-20 md:py-32 text-center bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA]">
-          <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-6xl font-bold font-headline text-white mb-6">
-              Your personal companion to remain steadfast in Salah
-            </h1>
-            <p className="text-lg md:text-xl text-gray-100 mb-10 max-w-3xl mx-auto">
-              Let Sujud help you build consistency in your daily salah
-            </p>
-            <Button size="lg" variant="default" asChild className="shadow-lg hover:shadow-xl transition-shadow">
-              <Link href="/signup">Get started for free <ArrowRight className="ml-2 h-5 w-5 text-primary-foreground" /></Link>
-            </Button>
+        <section className="py-20 md:py-32 bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA]">
+          <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            {/* Left Content */}
+            <div className="md:w-3/5 lg:w-1/2 text-center md:text-left">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-white mb-6">
+                Your personal companion to remain steadfast in Salah
+              </h1>
+              <p className="text-lg md:text-xl text-gray-100 mb-10 max-w-2xl mx-auto md:mx-0">
+                Let Sujud help you build consistency in your daily salah
+              </p>
+              <Button
+                size="lg"
+                asChild
+                className="bg-white text-primary hover:bg-gray-100 shadow-lg hover:shadow-xl transition-shadow rounded-full"
+              >
+                <Link href="/signup">
+                  Get started for free
+                  <ArrowRight className="ml-2 h-5 w-5 text-primary" />
+                </Link>
+              </Button>
+            </div>
+
+            {/* Right Image */}
+            <div className="md:w-2/5 lg:w-1/2 mt-12 md:mt-0 flex justify-center md:justify-end">
+              <div className="relative w-full max-w-md lg:max-w-lg aspect-[4/3] rounded-xl overflow-hidden shadow-2xl">
+                <Image
+                  src="https://placehold.co/600x450.png"
+                  alt="SUJUD App Interface Screenshot"
+                  layout="fill"
+                  objectFit="cover"
+                  data-ai-hint="app interface"
+                />
+              </div>
+            </div>
           </div>
         </section>
 
