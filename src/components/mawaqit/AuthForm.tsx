@@ -33,7 +33,7 @@ export default function AuthForm({ formSchema, onSubmit, onGoogleSignIn, mode, l
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 via-background to-accent/20 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] p-4">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-headline text-primary">
