@@ -9,6 +9,7 @@ import { auth } from '@/lib/firebase';
 import { updateUserProfileData } from '@/lib/firestore';
 import AuthForm from '@/components/mawaqit/AuthForm';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link'; // Import Link
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }).max(50, {message: 'Name can be at most 50 characters.'}),
@@ -42,7 +43,23 @@ export default function SignupPage() {
       toast({ title: 'Success', description: 'Account created successfully.' });
       router.push('/home'); 
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Signup Failed', description: error.message });
+      if (error.code === 'auth/email-already-in-use') {
+        toast({
+          variant: 'destructive',
+          title: 'Account Exists',
+          description: (
+            <span>
+              An account with this email already exists. Please{' '}
+              <Link href="/login" className="font-medium text-primary hover:underline">
+                login to access your account
+              </Link>
+              . If you've forgotten your password, you can reset it on the login page.
+            </span>
+          ),
+        });
+      } else {
+        toast({ variant: 'destructive', title: 'Signup Failed', description: error.message });
+      }
       console.error('Signup error:', error);
     } finally {
       setLoading(false);
