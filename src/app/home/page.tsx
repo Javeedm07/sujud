@@ -59,14 +59,13 @@ export default function HomePage() {
 
   return (
     <AuthenticatedLayout>
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="mb-6 flex flex-row justify-between items-center gap-4">
         <h1 className="text-3xl font-bold font-headline text-primary">
           Assalam alaikum, {userName}
         </h1>
         <Button variant="outline" asChild>
-          <Link href="/prayer-history" className="flex items-center gap-2">
+          <Link href="/prayer-history" className="flex items-center">
             <CalendarDays size={20} />
-            View Prayer History
           </Link>
         </Button>
       </div>
