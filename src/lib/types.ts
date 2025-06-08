@@ -30,6 +30,14 @@ export interface PrayerStat {
 
 export interface UserProfileData {
   displayName?: string;
-  email?: string; // Added email field
+  email?: string; 
   phoneNumber?: string;
+}
+
+export interface SalahTip {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  category?: 'quantity' | 'quality' | 'general'; // Optional category
 }

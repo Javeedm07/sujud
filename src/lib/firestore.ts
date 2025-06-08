@@ -1,7 +1,7 @@
 
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy, limit, FirestoreError, DocumentData, serverTimestamp, Timestamp } from 'firebase/firestore';
-import type { DailyPrayers, PrayerName, PrayerStatus, PrayerDetails, UserProfileData } from '@/lib/types';
+import type { DailyPrayers, PrayerName, PrayerStatus, PrayerDetails, UserProfileData, SalahTip } from '@/lib/types';
 
 export const PRAYER_NAMES: PrayerName[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
@@ -41,7 +41,6 @@ export const getDailyPrayers = async (userId: string, date: string): Promise<Dai
         let currentStatus: PrayerStatus = 'NOT_MARKED';
         let currentTimestamp: Date | null = null;
 
-        // Expecting new schema: { status: PrayerStatus, timestamp?: Date | null }
         if (prayerData && typeof prayerData.status === 'string') {
             currentStatus = prayerData.status as PrayerStatus;
             if (prayerData.timestamp && prayerData.timestamp instanceof Timestamp) {
@@ -86,8 +85,12 @@ export const updatePrayerStatus = async (userId: string, date: string, prayerNam
         Maghrib: { status: 'NOT_MARKED', timestamp: null },
         Isha: { status: 'NOT_MARKED', timestamp: null },
       };
-      (newDailyPrayers[prayerName] as PrayerDetails) = { status: newStatus, timestamp: newStatus === 'PRAYED' ? serverTimestamp() : null };
+      (newDailyPrayers[prayerName] as PrayerDetails) = { status: newStatus, timestamp: newStatus === 'PRAYED' ? new Date() : null }; // Use new Date() for immediate client feedback before serverTimestamp
       await setDoc(prayerDocRef, newDailyPrayers);
+      // After setting, immediately update with serverTimestamp for consistency
+      await updateDoc(prayerDocRef, { [`${prayerName}.timestamp`]: serverTimestamp() });
+
+
     } else {
       await updateDoc(prayerDocRef, prayerUpdate);
     }
@@ -141,11 +144,11 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
               prayedCount++;
             } else if (prayerDetails?.status === 'NOT_PRAYED') {
               notPrayedCount++;
-            } else { // Includes NOT_MARKED and cases where status might be missing
+            } else { 
               notMarkedCount++;
             }
           });
-        } else { // Specific prayer filter
+        } else { 
           const prayerDetails = data[filter as PrayerName];
           if (prayerDetails?.status === 'PRAYED') {
             prayedCount++;
@@ -155,11 +158,11 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
             notMarkedCount++;
           }
         }
-      } else { // Document for the day does not exist
+      } else { 
         if (filter === 'all') {
-          notMarkedCount += PRAYER_NAMES.length; // All 5 prayers are 'Not Marked'
+          notMarkedCount += PRAYER_NAMES.length; 
         } else {
-          notMarkedCount++; // The specific prayer is 'Not Marked'
+          notMarkedCount++; 
         }
       }
     }
@@ -185,8 +188,8 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
           });
         }
       }
-      const weekEndDate = new Date(today);
-      weekEndDate.setDate(today.getDate() - (week * 7));
+      // const weekEndDate = new Date(today);
+      // weekEndDate.setDate(today.getDate() - (week * 7));
       const weekLabel = `Week ${4-week}`;
       prayerData.push({ week: weekLabel, count: weeklyPrayedCount });
     }
@@ -203,7 +206,7 @@ export const getUserProfileData = async (userId: string): Promise<UserProfileDat
       const data = userDocSnap.data();
       return {
         displayName: data.displayName || '',
-        email: data.email || '', // Fetch email
+        email: data.email || '', 
         phoneNumber: data.phoneNumber || '',
       };
     }
@@ -217,9 +220,30 @@ export const getUserProfileData = async (userId: string): Promise<UserProfileDat
 export const updateUserProfileData = async (userId: string, data: Partial<UserProfileData>): Promise<void> => {
   try {
     const userDocRef = doc(db, 'users', userId);
-    await setDoc(userDocRef, data, { merge: true });
+    // Ensure email is included if present in the data object
+    const updateData: { [key: string]: any } = { ...data };
+    if (data.email) {
+      updateData.email = data.email;
+    }
+    await setDoc(userDocRef, updateData, { merge: true });
   } catch (error) {
     console.error("Error updating user profile data:", error);
     throw error;
+  }
+};
+
+export const getSalahTips = async (): Promise<SalahTip[]> => {
+  try {
+    const tipsCollectionRef = collection(db, 'salahTips');
+    const q = query(tipsCollectionRef, orderBy('title')); // Optional: order by title
+    const querySnapshot = await getDocs(q);
+    const tips: SalahTip[] = [];
+    querySnapshot.forEach((docSnap) => {
+      tips.push({ id: docSnap.id, ...docSnap.data() } as SalahTip);
+    });
+    return tips;
+  } catch (error) {
+    console.error("Error fetching Salah tips:", error);
+    throw error; // Re-throw the error to be handled by the caller
   }
 };

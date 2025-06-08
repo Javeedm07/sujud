@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutDashboard, LogOut, UserCircle, Wand2, CalendarDays, Menu } from 'lucide-react';
+import { Home, LayoutDashboard, LogOut, UserCircle, Wand2, CalendarDays, Menu, BookOpenCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -18,7 +18,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from '@/lib/utils';
-// ThemeToggle import removed
 import React, { useState } from 'react';
 
 export default function Header() {
@@ -46,6 +45,7 @@ export default function Header() {
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/prayer-history", label: "History", icon: CalendarDays },
     { href: "/verse-suggestion", label: "Verse Suggestion", icon: Wand2 },
+    { href: "/salah-tips", label: "Salah Tips", icon: BookOpenCheck },
   ];
 
   return (
@@ -59,7 +59,6 @@ export default function Header() {
         <div className="flex items-center gap-1 sm:gap-2">
           {user ? (
             <>
-              {/* Hamburger Menu for logged-in users */}
               <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-10 w-10">
@@ -69,7 +68,6 @@ export default function Header() {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col p-0">
                   <SheetTitle className="sr-only">Main Navigation Menu</SheetTitle>
-                  {/* Sheet Header */}
                   <div className="p-4 border-b border-border">
                     <Link href="/home" className="flex items-center gap-2" onClick={() => setIsSheetOpen(false)}>
                       <Image src="/logo.svg" alt="SUJUD Logo" width={28} height={28} />
@@ -77,7 +75,6 @@ export default function Header() {
                     </Link>
                   </div>
 
-                  {/* Navigation Links */}
                   <nav className="flex-grow p-4 space-y-1.5 overflow-y-auto">
                     {navItems.map((item) => {
                       const isActive = pathname === item.href;
@@ -100,20 +97,9 @@ export default function Header() {
                       );
                     })}
                   </nav>
-
-                  {/* Theme Toggle Section at the bottom of the sheet - REMOVED */}
-                  {/*
-                  <div className="p-4 mt-auto border-t border-border">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-foreground">Theme</span>
-                      <ThemeToggle />
-                    </div>
-                  </div>
-                  */}
                 </SheetContent>
               </Sheet>
 
-              {/* Profile Icon/User Dropdown - remains outside */}
               {loading ? (
                  <div className="h-10 w-10 bg-muted rounded-full animate-pulse"></div>
               ) : (
@@ -154,10 +140,7 @@ export default function Header() {
               )}
             </>
           ) : (
-            // Logged-out state: AuthButtons (ThemeToggle removed)
             <>
-              {/* {!loading && <ThemeToggle />} ThemeToggle removed */}
-              {/* {loading && <div className="h-10 w-10 bg-muted rounded-full animate-pulse mr-2"></div>} Skeleton for ThemeToggle space, no longer needed */}
               {!loading && (
                 <>
                   <Button variant="ghost" size="sm" asChild>
@@ -170,7 +153,6 @@ export default function Header() {
               )}
             </>
           )}
-          {/* Skeleton for profile avatar if auth is still loading and user is not yet determined */}
           {loading && !user && (
               <div className="h-10 w-10 bg-muted rounded-full animate-pulse"></div>
           )}
