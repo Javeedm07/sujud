@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth'; // Removed GoogleAuthProvider, signInWithPopup
 import { z } from 'zod';
 import { auth } from '@/lib/firebase';
 import AuthForm from '@/components/mawaqit/AuthForm';
@@ -33,26 +33,13 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      toast({ title: 'Success', description: 'Logged in with Google successfully.' });
-      router.push('/home'); // Redirect to /home
-    } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Google Sign-In Failed', description: error.message });
-      console.error('Google sign-in error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Removed handleGoogleSignIn function
 
   return (
     <AuthForm
       formSchema={loginSchema}
       onSubmit={handleEmailLogin}
-      onGoogleSignIn={handleGoogleSignIn}
+      // onGoogleSignIn prop removed
       mode="login"
       loading={loading}
     />

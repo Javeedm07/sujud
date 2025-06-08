@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth'; // Removed GoogleAuthProvider, signInWithPopup, updateProfile
 import { z } from 'zod';
 import { auth } from '@/lib/firebase';
 import AuthForm from '@/components/mawaqit/AuthForm';
@@ -27,7 +27,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      // You can set a display name here if you have a field for it
+      // You can set a display name here if you have a field for it and re-import updateProfile
       // await updateProfile(userCredential.user, { displayName: "Some Name" });
       toast({ title: 'Success', description: 'Account created successfully.' });
       router.push('/home'); // Redirect to /home
@@ -39,26 +39,13 @@ export default function SignupPage() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      toast({ title: 'Success', description: 'Signed up with Google successfully.' });
-      router.push('/home'); // Redirect to /home
-    } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Google Sign-Up Failed', description: error.message });
-      console.error('Google sign-up error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Removed handleGoogleSignIn function
 
   return (
     <AuthForm
       formSchema={signupSchema}
       onSubmit={handleEmailSignup}
-      onGoogleSignIn={handleGoogleSignIn}
+      // onGoogleSignIn prop removed
       mode="signup"
       loading={loading}
     />
