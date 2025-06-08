@@ -4,8 +4,6 @@
 import PublicNavbar from '@/components/layout/PublicNavbar';
 import PublicFooter from '@/components/layout/PublicFooter';
 import { Button } from '@/components/ui/button';
-// Card components are no longer needed for features section
-// CheckSquare, Sparkles, BookOpenText, BarChart3 icons are no longer needed for features.
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -51,12 +49,11 @@ const newFeaturesData: FeatureDetail[] = [
 ];
 
 export default function LandingPage() {
-  // Old features array removed
-
   const howItWorksSteps = [
-    { title: "Sign up for free", description: "Create your account in seconds and start your journey." },
-    { title: "Track your prayers", description: "Use the intuitive daily checklist to mark your completed Salah." },
-    { title: "Observe your growth", description: "Monitor your progress and consistency on your personal dashboard." },
+    { title: "Sign Up", description: "Start your journey by creating an account and setting a pure niyyah to stay consistent in your daily prayers." },
+    { title: "Track Your Salah", description: "Easily log your five daily prayers and hold yourself accountable with every Salah you complete." },
+    { title: "Reflect Through Insights", description: "View simple, insightful analytics that help you recognize patterns, celebrate consistency, and stay motivated without guilt." },
+    { title: "Personalized Guidance", description: "Based on your habits and rhythm, receive spiritually grounded, personalized tips to improve your salah." },
   ];
 
   return (
@@ -145,19 +142,29 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-16 md:py-24 bg-secondary/30"> {/* Changed to bg-secondary/30 for visual separation */}
+        <section id="how-it-works" className="py-16 md:py-24 bg-secondary/30">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-center text-foreground mb-16">
               Simple steps to spiritual growth
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {howItWorksSteps.map((step, index) => (
                 <div key={index} className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md hover:shadow-lg transition-shadow">
                   <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground text-2xl font-bold mb-4">
                     {index + 1}
                   </div>
                   <h3 className="text-xl font-semibold mb-2 text-foreground">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
+                  <p className="text-muted-foreground mb-6">{step.description}</p>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="mt-auto bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] text-primary-foreground hover:opacity-90 rounded-full"
+                  >
+                    <Link href="/login">
+                      Get Started for Free
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  </Button>
                 </div>
               ))}
             </div>
