@@ -26,7 +26,7 @@ export const getDailyPrayers = async (userId: string, date: string): Promise<Dai
     const prayerDocSnap = await getDoc(prayerDocRef);
 
     if (prayerDocSnap.exists()) {
-      const data = prayerDocSnap.data() as any; // Read as any initially
+      const data = prayerDocSnap.data() as any; 
       const newSchemaPrayers: DailyPrayers = {
         date: data.date || date,
         Fajr: { status: 'NOT_MARKED', timestamp: null },
@@ -37,22 +37,20 @@ export const getDailyPrayers = async (userId: string, date: string): Promise<Dai
       };
 
       PRAYER_NAMES.forEach(name => {
-        const prayerData = data[name]; // This is expected to be PrayerDetails or undefined
+        const prayerData = data[name]; 
         let currentStatus: PrayerStatus = 'NOT_MARKED';
         let currentTimestamp: Date | null = null;
 
-        if (prayerData && prayerData.status) { // Expects new format with PrayerStatus
+        if (prayerData && prayerData.status) { 
           currentStatus = prayerData.status as PrayerStatus;
           if (prayerData.timestamp && prayerData.timestamp instanceof Timestamp) {
             currentTimestamp = prayerData.timestamp.toDate();
           }
         }
-        // If prayerData is undefined or doesn't have status, it defaults to NOT_MARKED as initialized above
         newSchemaPrayers[name] = { status: currentStatus, timestamp: currentTimestamp };
       });
       return newSchemaPrayers;
     } else {
-      // Create a new document for the day if it doesn't exist, all statuses NOT_MARKED
       const newDailyPrayers: DailyPrayers = {
         date,
         Fajr: { status: 'NOT_MARKED', timestamp: null },
@@ -79,7 +77,6 @@ export const updatePrayerStatus = async (userId: string, date: string, prayerNam
 
     const docSnap = await getDoc(prayerDocRef);
     if (!docSnap.exists()) {
-      // Create a new document with all prayers NOT_MARKED, then set the specific one
       const newDailyPrayers: DailyPrayers = {
         date,
         Fajr: { status: 'NOT_MARKED', timestamp: null },
@@ -88,7 +85,6 @@ export const updatePrayerStatus = async (userId: string, date: string, prayerNam
         Maghrib: { status: 'NOT_MARKED', timestamp: null },
         Isha: { status: 'NOT_MARKED', timestamp: null },
       };
-      // Directly assign the PrayerDetails object for the updated prayer
       (newDailyPrayers[prayerName] as PrayerDetails) = { status: newStatus, timestamp: newStatus === 'PRAYED' ? serverTimestamp() : null };
       await setDoc(prayerDocRef, newDailyPrayers);
     } else {
@@ -127,38 +123,50 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
   }
   else if (period === 'monthly' && filter) {
      let prayedCount = 0;
-     let totalPotentialPrayersInPeriod = 0;
+     let notPrayedCount = 0;
+     let notMarkedCount = 0;
 
-     for (let i = 29; i >= 0; i--) {
+     for (let i = 29; i >= 0; i--) { // Iterate over the last 30 days
         const date = new Date(today);
         date.setDate(today.getDate() - i);
         const dateString = convertDateToYYYYMMDD(date);
         const dailyPrayersDocSnap = await getDoc(doc(db, 'users', userId, 'prayers', dateString));
 
-        if (filter === 'all') {
-            totalPotentialPrayersInPeriod += PRAYER_NAMES.length;
-            if (dailyPrayersDocSnap.exists()) {
-                const data = dailyPrayersDocSnap.data() as DailyPrayers;
+        if (dailyPrayersDocSnap.exists()) {
+            const data = dailyPrayersDocSnap.data() as DailyPrayers;
+            if (filter === 'all') {
                 PRAYER_NAMES.forEach(name => {
-                    if (data[name]?.status === 'PRAYED') prayedCount++;
+                    const prayerDetails = data[name];
+                    if (prayerDetails?.status === 'PRAYED') {
+                        prayedCount++;
+                    } else if (prayerDetails?.status === 'NOT_PRAYED') {
+                        notPrayedCount++;
+                    } else { // Includes NOT_MARKED and cases where status might be missing
+                        notMarkedCount++;
+                    }
                 });
+            } else { // Specific prayer filter
+                const prayerDetails = data[filter as PrayerName];
+                if (prayerDetails?.status === 'PRAYED') {
+                    prayedCount++;
+                } else if (prayerDetails?.status === 'NOT_PRAYED') {
+                    notPrayedCount++;
+                } else {
+                    notMarkedCount++;
+                }
             }
-        } else { // Specific prayer filter
-            totalPotentialPrayersInPeriod++;
-            if (dailyPrayersDocSnap.exists()) {
-                const data = dailyPrayersDocSnap.data() as DailyPrayers;
-                if (data[filter as PrayerName]?.status === 'PRAYED') prayedCount++;
+        } else { // Document for the day does not exist
+            if (filter === 'all') {
+                notMarkedCount += PRAYER_NAMES.length; // All 5 prayers are 'Not Marked'
+            } else {
+                notMarkedCount++; // The specific prayer is 'Not Marked'
             }
         }
      }
-     if (totalPotentialPrayersInPeriod > 0) {
-      prayerData.push({ name: 'Prayed', value: prayedCount });
-      prayerData.push({ name: 'Missed/Not Marked', value: totalPotentialPrayersInPeriod - prayedCount });
-     } else {
-      // Default to show 'No Data' if no potential prayers (e.g., new user, specific filter with no history)
-      prayerData.push({ name: 'Prayed', value: 0 });
-      prayerData.push({ name: 'Missed/Not Marked', value: 0 }); // Or a single 'No Data' entry
-     }
+     
+    prayerData.push({ name: 'Prayed', value: prayedCount });
+    prayerData.push({ name: 'Not Prayed', value: notPrayedCount });
+    prayerData.push({ name: 'Not Marked', value: notMarkedCount });
 
   } else if (period === 'weekly') {
     for (let week = 3; week >= 0; week--) {
@@ -177,10 +185,9 @@ export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' 
           });
         }
       }
-      // To ensure consistent weekly labels (e.g., "Week ending M/D")
       const weekEndDate = new Date(today);
       weekEndDate.setDate(today.getDate() - (week * 7));
-      const weekLabel = `Week ${4-week}`; // Placeholder, could be more descriptive like weekEndDate.toLocaleDateString()
+      const weekLabel = `Week ${4-week}`; 
       prayerData.push({ week: weekLabel, count: weeklyPrayedCount });
     }
   }
@@ -216,3 +223,7 @@ export const updateUserProfileData = async (userId: string, data: Partial<UserPr
   }
 };
 
+export interface UserProfileData {
+  displayName?: string; 
+  phoneNumber?: string;
+}

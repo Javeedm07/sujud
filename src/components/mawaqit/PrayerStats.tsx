@@ -7,12 +7,18 @@ import { useAuth } from '@/hooks/useAuth';
 import { getPrayerStats, PRAYER_NAMES } from '@/lib/firestore';
 import type { PrayerStat, PrayerName } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
-const COLORS_PIE = ['hsl(var(--accent))', 'hsl(var(--muted))']; // Completed, Missed
+const COLORS_PIE = ['hsl(var(--accent))', 'hsl(var(--destructive))', 'hsl(var(--muted))']; // Prayed, Not Prayed, Not Marked
 const BAR_COLOR = 'hsl(var(--primary))';
 const LINE_COLOR = 'hsl(var(--accent))';
+
+const filterOptions: { label: string; value: PrayerName | 'all' }[] = [
+  { label: 'All', value: 'all' },
+  ...PRAYER_NAMES.map(name => ({ label: name, value: name })),
+];
 
 export default function PrayerStats() {
   const { user } = useAuth();
@@ -27,7 +33,6 @@ export default function PrayerStats() {
   const [error, setError] = useState<string | null>(null);
   const [pieFilter, setPieFilter] = useState<PrayerName | 'all'>('all');
 
-  // Effect for Bar and Line charts
   useEffect(() => {
     if (!user) {
       setLoadingBar(false);
@@ -44,10 +49,8 @@ export default function PrayerStats() {
           getPrayerStats(user.uid, 'daily', 'all'),
           getPrayerStats(user.uid, 'weekly', 'all')
         ]);
-        // @ts-ignore
-        setBarData(barStats);
-        // @ts-ignore
-        setLineData(lineStats);
+        setBarData(barStats as PrayerStat[]);
+        setLineData(lineStats as PrayerStat[]);
       } catch (err) {
         console.error("Failed to fetch bar/line prayer stats:", err);
         setError("Could not load some prayer statistics. Please try again later.");
@@ -60,7 +63,6 @@ export default function PrayerStats() {
     fetchBarAndLineData();
   }, [user]);
 
-  // Effect for Pie chart
   useEffect(() => {
     if (!user) {
       setLoadingPie(false);
@@ -69,10 +71,9 @@ export default function PrayerStats() {
 
     const fetchPieData = async () => {
       setLoadingPie(true);
-      setError(null); // Clear previous errors relevant to pie chart
+      setError(null); 
       try {
         const initialPieStats = await getPrayerStats(user.uid, 'monthly', pieFilter);
-        // @ts-ignore
         setPieData(initialPieStats as { name: string; value: number }[]);
       } catch (err) {
         console.error("Failed to fetch pie chart stats:", err);
@@ -116,20 +117,27 @@ export default function PrayerStats() {
 
         <Card>
             <CardHeader>
-            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div>
-                    <CardTitle className="font-headline text-primary">Monthly Prayer Completion</CardTitle>
-                    <CardDescription>Overall percentage for the last 30 days.</CardDescription>
+                    <CardTitle className="font-headline text-primary">Monthly Prayer Status</CardTitle>
+                    <CardDescription>Distribution for the last 30 days.</CardDescription>
                 </div>
-                <Select value={pieFilter} onValueChange={(value) => setPieFilter(value as PrayerName | 'all')}>
-                    <SelectTrigger className="w-full sm:w-[180px]">
-                        <SelectValue placeholder="Filter by prayer" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Prayers</SelectItem>
-                        {PRAYER_NAMES.map(name => <SelectItem key={name} value={name}>{name}</SelectItem>)}
-                    </SelectContent>
-                </Select>
+                <div className="flex flex-wrap gap-2">
+                  {filterOptions.map(option => (
+                    <Button
+                      key={option.value}
+                      variant={pieFilter === option.value ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setPieFilter(option.value)}
+                      className={cn(
+                        "transition-all duration-200 ease-in-out",
+                        pieFilter === option.value ? "shadow-md scale-105" : "hover:shadow-sm"
+                      )}
+                    >
+                      {option.label}
+                    </Button>
+                  ))}
+                </div>
             </div>
             </CardHeader>
             <CardContent>
@@ -140,14 +148,14 @@ export default function PrayerStats() {
                 <PieChart>
                     <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
                     {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS_PIE[index % COLORS_PIE.length]} />
+                        <Cell key={`cell-${index}`} fill={COLORS_PIE[index % COLORS_PIE.length]} stroke="hsl(var(--background))" />
                     ))}
                     </Pie>
                     <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} />
                     <Legend />
                 </PieChart>
                 </ResponsiveContainer>
-            ) : <p className="text-muted-foreground">No data available for monthly prayer completion or all values are zero.</p>}
+            ) : <p className="text-muted-foreground">No data available for monthly prayer status or all values are zero.</p>}
             </CardContent>
         </Card>
         
