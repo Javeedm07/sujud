@@ -11,12 +11,15 @@ import { CalendarDays, Share2, Copy } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function HomePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [inviteLinkCopied, setInviteLinkCopied] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -57,18 +60,35 @@ export default function HomePage() {
       });
   };
 
+  const prayerHistoryButton = (
+    <Button variant="outline" asChild>
+      <Link href="/prayer-history" className="flex items-center gap-2 px-3"> {/* Added gap-2 and px-3 for padding when text is shown */}
+        <CalendarDays size={20} />
+        <span className="hidden md:inline">View Prayer History</span>
+      </Link>
+    </Button>
+  );
+
   return (
     <AuthenticatedLayout>
       <div className="mb-6 flex flex-row justify-between items-center gap-4">
         <h1 className="text-3xl font-bold font-headline text-primary">
           Assalam alaikum, {userName}
         </h1>
-        <Button variant="outline" asChild>
-          <Link href="/prayer-history" className="flex items-center gap-2 px-3"> {/* Added gap-2 and px-3 for padding when text is shown */}
-            <CalendarDays size={20} />
-            <span className="hidden md:inline">View Prayer History</span>
-          </Link>
-        </Button>
+        {isMobile ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {prayerHistoryButton}
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View Prayer History</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          prayerHistoryButton
+        )}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
