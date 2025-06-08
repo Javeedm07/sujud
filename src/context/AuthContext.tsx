@@ -35,49 +35,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const performSignOut = useCallback(async () => {
     try {
       await firebaseSignOut(auth);
-      setUser(null); 
-      router.push('/'); 
+      setUser(null);
+      router.push('/');
     } catch (error) {
       console.error("Error signing out: ", error);
     }
   }, [router]);
 
+  const publicAuthPaths = ['/login', '/signup', '/forgot-password'];
+  const landingPagePath = '/';
+
   useEffect(() => {
-    if (loading) return; 
+    if (loading) return;
 
-    const isAuthPage = pathname === '/login' || pathname === '/signup';
-    const isLandingPage = pathname === '/';
-
-    if (user) { 
-      if (isAuthPage) { // Only redirect from auth pages if logged in
-        router.push('/home'); 
+    if (user) { // User is authenticated
+      if (publicAuthPaths.includes(pathname)) {
+        // If logged in and on a login, signup, or forgot-password page, redirect to home
+        router.push('/home');
       }
-    } else { 
-      if (!isLandingPage && !isAuthPage) {
+    } else { // User is NOT authenticated
+      if (pathname !== landingPagePath && !publicAuthPaths.includes(pathname)) {
+        // If not logged in, AND not on landing, AND not on a public auth path, redirect to login
         router.push('/login');
       }
     }
-  }, [user, loading, router, pathname]);
+  }, [user, loading, router, pathname, publicAuthPaths, landingPagePath]);
 
 
   if (loading) {
     return <FullScreenLoader message="Loading session..." />;
   }
 
-  const isAuthPageForRender = pathname === '/login' || pathname === '/signup';
-  const isLandingPageForRender = pathname === '/';
+  const isPublicAuthPageForRender = publicAuthPaths.includes(pathname);
+  const isLandingPageForRender = pathname === landingPagePath;
 
   if (user) {
-    // If user is logged in AND on an auth page, show loading/redirecting message
-    if (isAuthPageForRender) { 
+    // If user is logged in AND on a public auth page, show loading/redirecting message
+    if (isPublicAuthPageForRender) {
       return <FullScreenLoader message="Redirecting to SUJUD..." />;
     }
-  } else { 
-    // If user is NOT logged in AND NOT on landing/auth page, show loading/redirecting
-    if (!isLandingPageForRender && !isAuthPageForRender) {
+  } else {
+    // If user is NOT logged in AND NOT on landing/public auth page, show loading/redirecting
+    if (!isLandingPageForRender && !isPublicAuthPageForRender) {
       return <FullScreenLoader message="Redirecting to login..." />;
     }
   }
-  
+
   return <AuthContext.Provider value={{ user, loading, signOut: performSignOut, setUser }}>{children}</AuthContext.Provider>;
 };
