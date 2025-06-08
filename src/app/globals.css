@@ -31,8 +31,8 @@ h1, h2, h3, h4, h5, h6 {
     --muted: 207 30% 80%;
     --muted-foreground: 210 10% 45%;
 
-    --accent: 175 38% 64%; /* Muted green (#80CBC4) */
-    --accent-foreground: 175 25% 25%; /* Darker text on accent */
+    --accent: 227 95% 58%; /* Changed from Muted green to Vibrant Blue (Primary) */
+    --accent-foreground: 210 40% 98%; /* Changed to match Primary Foreground */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -44,7 +44,7 @@ h1, h2, h3, h4, h5, h6 {
     --radius: 0.5rem;
 
     --chart-1: 227 95% 58%; /* Updated to new primary */
-    --chart-2: 175 38% 64%;
+    --chart-2: 210 40% 70%; /* Changed from accent to chart-3's HSL */
     --chart-3: 210 40% 70%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
@@ -54,8 +54,8 @@ h1, h2, h3, h4, h5, h6 {
     --sidebar-foreground: 210 10% 23%;
     --sidebar-primary: 227 95% 58%;
     --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 175 38% 64%;
-    --sidebar-accent-foreground: 175 25% 25%;
+    --sidebar-accent: 227 95% 58%; /* Changed from Muted green to Vibrant Blue (Primary) */
+    --sidebar-accent-foreground: 210 40% 98%; /* Changed to match Primary Foreground */
     --sidebar-border: 207 20% 88%;
     --sidebar-ring: 227 95% 50%;
   }
@@ -79,8 +79,8 @@ h1, h2, h3, h4, h5, h6 {
     --muted: 210 10% 20%;
     --muted-foreground: 210 20% 65%;
 
-    --accent: 175 38% 64%;
-    --accent-foreground: 175 25% 15%;
+    --accent: 227 95% 58%; /* Changed from Muted green to Vibrant Blue (Primary) */
+    --accent-foreground: 210 40% 98%; /* Changed to match Primary Foreground */
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
@@ -94,8 +94,8 @@ h1, h2, h3, h4, h5, h6 {
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 227 95% 58%;
     --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 175 38% 64%;
-    --sidebar-accent-foreground: 175 25% 15%;
+    --sidebar-accent: 227 95% 58%; /* Changed from Muted green to Vibrant Blue (Primary) */
+    --sidebar-accent-foreground: 210 40% 98%; /* Changed to match Primary Foreground */
     --sidebar-border: 210 10% 20%;
     --sidebar-ring: 227 95% 65%;
   }
