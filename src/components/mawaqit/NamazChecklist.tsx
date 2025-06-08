@@ -10,14 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Moon, Sunrise, Sun, Sunset, CloudSun, Circle, CheckCircle, XCircle as XCircleIcon, X } from 'lucide-react'; // Renamed XCircle to XCircleIcon to avoid conflict with X
+import { Moon, Sunrise, Sun, Sunset, CloudSun, Circle, CheckCircle, XCircle as XCircleIcon, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import * as DialogPrimitive from "@radix-ui/react-dialog"; // For the 'X' close button
 import {
   AlertDialog,
-  // AlertDialogAction, // Not used
-  // AlertDialogCancel, // Removed
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -226,7 +223,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
               labelClass = 'text-primary font-semibold';
               prayerTimeIconColorClass = 'text-primary';
             } else if (status === 'NOT_PRAYED') {
-              StatusIcon = XCircleIcon; // Use renamed XCircleIcon
+              StatusIcon = XCircleIcon;
               iconColorClass = 'text-destructive';
               rowBgClass = 'bg-destructive/10 border-destructive/50';
               labelClass = 'text-destructive line-through';
@@ -278,10 +275,19 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
           if (!open) setSelectedPrayerForPopup(null);
       }}>
         <AlertDialogContent>
-          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+            onClick={() => {
+              setIsPopupOpen(false);
+              setSelectedPrayerForPopup(null);
+            }}
+            aria-label="Close"
+          >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
+          </Button>
           <AlertDialogHeader>
             <AlertDialogTitle>Update {selectedPrayerForPopup} Status</AlertDialogTitle>
             <AlertDialogDescription>
@@ -289,7 +295,6 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            {/* AlertDialogCancel removed */}
             <Button variant="outline" onClick={() => handlePopupAction('NOT_PRAYED')}>
               Not Prayed
             </Button>
