@@ -2,7 +2,6 @@
 import AuthenticatedLayout from '@/components/layout/AuthenticatedLayout';
 import NamazChecklist from '@/components/mawaqit/NamazChecklist';
 import DailyInspiration from '@/components/mawaqit/DailyInspiration';
-import PersonalizedVerseSuggestion from '@/components/mawaqit/PersonalizedVerseSuggestion';
 
 export default function HomePage() {
   return (
@@ -13,7 +12,6 @@ export default function HomePage() {
         </div>
         <div className="space-y-6">
           <DailyInspiration />
-          <PersonalizedVerseSuggestion />
         </div>
       </div>
     </AuthenticatedLayout>

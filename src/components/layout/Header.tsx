@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutDashboard, LogOut, CalendarDays, UserCircle } from 'lucide-react';
+import { Home, LayoutDashboard, LogOut, CalendarDays, UserCircle, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -54,6 +54,7 @@ export default function Header() {
     { href: "/home", label: "Home", icon: Home },
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/prayer-history", label: "History", icon: CalendarDays },
+    { href: "/verse-suggestion", label: "Verse Suggestion", icon: Wand2 },
   ];
 
   return (
@@ -143,4 +144,3 @@ export default function Header() {
     </header>
   );
 }
-
