@@ -4,39 +4,58 @@
 import PublicNavbar from '@/components/layout/PublicNavbar';
 import PublicFooter from '@/components/layout/PublicFooter';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckSquare, Sparkles, BookOpenText, BarChart3, ArrowRight } from 'lucide-react';
+// Card components are no longer needed for features section
+// CheckSquare, Sparkles, BookOpenText, BarChart3 icons are no longer needed for features.
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+interface FeatureDetail {
+  title: string;
+  description: string;
+  buttonText: string;
+  buttonLink: string;
+  imageSrc: string;
+  imageAlt: string;
+  aiHint: string;
+}
+
+const newFeaturesData: FeatureDetail[] = [
+  {
+    title: "Daily Salah Tracker",
+    description: "Mark each of your five daily prayers. A gently way to hold yourself accountable without judgement.",
+    buttonText: "Get Started for Free",
+    buttonLink: "/login",
+    imageSrc: "https://placehold.co/600x450.png",
+    imageAlt: "Illustration of daily salah tracking on a mobile app",
+    aiHint: "prayer tracking app",
+  },
+  {
+    title: "Insightful Analytics",
+    description: "Reflect on your progress, notice your patterns, and gently realign your intentions.",
+    buttonText: "Get Started for Free",
+    buttonLink: "/login",
+    imageSrc: "https://placehold.co/600x450.png",
+    imageAlt: "Charts and graphs showing prayer analytics",
+    aiHint: "analytics charts dashboard",
+  },
+  {
+    title: "Personalised guidance for improvement",
+    description: "Receive faith-rooted tips and practices tailored to your journey to help you improve your Salah.",
+    buttonText: "Get Started for Free",
+    buttonLink: "/login",
+    imageSrc: "https://placehold.co/600x450.png",
+    imageAlt: "Illustration of personalized guidance for spiritual improvement",
+    aiHint: "guidance meditation",
+  },
+];
+
 export default function LandingPage() {
-  const features = [
-    {
-      icon: <CheckSquare className="h-10 w-10 text-primary" />,
-      title: "Daily prayer checklist",
-      description: "Easily mark your five daily prayers. Stay accountable and build a consistent habit.",
-    },
-    {
-      icon: <BarChart3 className="h-10 w-10 text-primary" />,
-      title: "Track your progress",
-      description: "Visualize your prayer consistency over time with insightful statistics and charts.",
-    },
-    {
-      icon: <Sparkles className="h-10 w-10 text-primary" />,
-      title: "Daily inspiration",
-      description: "Start your day with uplifting Islamic quotes and verses from the Quran to enlighten your path.",
-    },
-    {
-      icon: <BookOpenText className="h-10 w-10 text-primary" />,
-      title: "Personalized verse suggestion",
-      description: "Facing a challenge? Share your thoughts and receive relevant Quranic verses for guidance and comfort.",
-    },
-  ];
+  // Old features array removed
 
   const howItWorksSteps = [
     { title: "Sign up for free", description: "Create your account in seconds and start your journey." },
     { title: "Track your prayers", description: "Use the intuitive daily checklist to mark your completed Salah." },
-    // Step 3 removed
     { title: "Observe your growth", description: "Monitor your progress and consistency on your personal dashboard." },
   ];
 
@@ -83,35 +102,51 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Features Section */}
-        <section id="features" className="py-16 md:py-24 bg-secondary/30">
+        {/* Features Section - Redesigned */}
+        <section id="features" className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline text-center text-foreground mb-16">
-              Everything you need for a fulfilling prayer journey
+            <h2 className="text-3xl md:text-4xl font-bold font-headline text-center text-foreground mb-16 md:mb-20">
+              Everything you need for a fulfilling Salah journey
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {features.map((feature, index) => (
-                <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow bg-card">
-                  <CardHeader className="items-center">
-                    {feature.icon}
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <CardTitle className="text-xl font-semibold mb-2 text-foreground">{feature.title}</CardTitle>
-                    <p className="text-muted-foreground">{feature.description}</p>
-                  </CardContent>
-                </Card>
+            <div className="space-y-16 md:space-y-24">
+              {newFeaturesData.map((feature, index) => (
+                <div key={feature.title} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+                  {/* Text Content Column */}
+                  <div className={index % 2 === 0 ? "md:order-1" : "md:order-2"}> {/* Alternating order for text */}
+                    <h3 className="text-2xl md:text-3xl font-bold font-headline text-primary mb-4">{feature.title}</h3>
+                    <p className="text-lg text-muted-foreground mb-8">{feature.description}</p>
+                    <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full">
+                      <Link href={feature.buttonLink}>
+                        {feature.buttonText}
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                  </div>
+                  {/* Image Column */}
+                  <div className={index % 2 === 0 ? "md:order-2" : "md:order-1"}> {/* Alternating order for image */}
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl hover:shadow-primary/20 transition-shadow duration-300">
+                      <Image
+                        src={feature.imageSrc}
+                        alt={feature.imageAlt}
+                        layout="fill"
+                        objectFit="cover"
+                        data-ai-hint={feature.aiHint}
+                      />
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-16 md:py-24 bg-background">
+        <section id="how-it-works" className="py-16 md:py-24 bg-secondary/30"> {/* Changed to bg-secondary/30 for visual separation */}
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-center text-foreground mb-16">
               Simple steps to spiritual growth
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8"> {/* Changed lg:grid-cols-4 to lg:grid-cols-3 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8">
               {howItWorksSteps.map((step, index) => (
                 <div key={index} className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md hover:shadow-lg transition-shadow">
                   <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground text-2xl font-bold mb-4">
@@ -128,7 +163,7 @@ export default function LandingPage() {
         {/* Testimonials Section - Removed */}
 
         {/* Call to Action Section */}
-        <section className="py-20 md:py-32 bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] text-center"> {/* Changed background */}
+        <section className="py-20 md:py-32 bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] text-center">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary-foreground mb-6">
               Embark on your path to consistent prayer today
@@ -136,8 +171,8 @@ export default function LandingPage() {
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
               Join SUJUD and transform your spiritual routine. It's free to start, and the rewards are eternal.
             </p>
-            <Button size="lg" variant="default" asChild className="shadow-lg hover:shadow-xl transition-shadow">
-              <Link href="/signup">Sign Up Now <ArrowRight className="ml-2 h-5 w-5 text-primary-foreground" /></Link>
+            <Button size="lg" variant="default" asChild className="bg-white text-primary hover:bg-gray-100 shadow-lg hover:shadow-xl transition-shadow rounded-full">
+              <Link href="/signup">Sign Up Now <ArrowRight className="ml-2 h-5 w-5 text-primary" /></Link>
             </Button>
           </div>
         </section>
