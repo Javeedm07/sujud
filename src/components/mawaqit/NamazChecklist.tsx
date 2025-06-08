@@ -197,7 +197,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
       <Card className="bg-card/80 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="text-2xl font-headline text-primary">
-            {isToday ? `Assalam alaikum, ${userName}` : `Salah Tracker`}
+            Salah Tracker
           </CardTitle>
           <CardDescription>
             {isToday
