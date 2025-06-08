@@ -49,25 +49,15 @@ export default function LandingPage() {
         <section className="py-20 md:py-32 text-center bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA]">
           <div className="container mx-auto px-4">
             <h1 className="text-4xl md:text-6xl font-bold font-headline text-white mb-6">
-              Personal companion in your daily salah:
+              Your personal companion to remain steadfast in Salah
             </h1>
             <p className="text-lg md:text-xl text-gray-100 mb-10 max-w-3xl mx-auto">
-              Let Sujud help you build consistency in your daily salah.
+              Let Sujud help you build consistency in your daily salah
             </p>
             <Button size="lg" variant="secondary" asChild className="shadow-lg hover:shadow-xl transition-shadow">
-              <Link href="/signup" className="text-primary">Get started for free <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Link href="/signup" className="text-primary">Get started for free <ArrowRight className="ml-2 h-5 w-5 text-primary" /></Link>
             </Button>
-            <div className="mt-12 rounded-lg overflow-hidden shadow-2xl max-w-4xl mx-auto">
-              <Image
-                src="https://placehold.co/1200x600.png"
-                alt="SUJUD App Preview"
-                width={1200}
-                height={600}
-                className="w-full h-auto"
-                data-ai-hint="prayer rug"
-                priority
-              />
-            </div>
+            {/* Image removed from here */}
           </div>
         </section>
 
@@ -147,7 +137,7 @@ export default function LandingPage() {
               Join SUJUD and transform your spiritual routine. It's free to start, and the rewards are eternal.
             </p>
             <Button size="lg" variant="secondary" asChild className="shadow-lg hover:shadow-xl transition-shadow">
-              <Link href="/signup">Sign Up Now <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Link href="/signup" className="text-primary">Sign Up Now <ArrowRight className="ml-2 h-5 w-5 text-primary" /></Link>
             </Button>
           </div>
         </section>
