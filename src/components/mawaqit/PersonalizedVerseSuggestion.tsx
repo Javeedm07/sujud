@@ -32,7 +32,7 @@ export default function PersonalizedVerseSuggestion() {
       const input: PersonalizedVerseSuggestionInput = { challenge };
       const result = await personalizedVerseSuggestion(input);
       setSuggestion(result);
-      toast({ title: 'Suggestion Ready', description: 'Here is a verse for your reflection.', icon: <CheckCircle className="h-5 w-5 text-green-500" /> });
+      toast({ title: 'Suggestion Ready', description: 'Here is a verse for your reflection.', icon: <CheckCircle className="h-5 w-5 text-accent" /> });
     } catch (err) {
       console.error("Error getting verse suggestion:", err);
       let message = "Could not get a suggestion at this time. Please try again later.";

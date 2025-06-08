@@ -54,8 +54,8 @@ export default function LandingPage() {
             <p className="text-lg md:text-xl text-gray-100 mb-10 max-w-3xl mx-auto">
               Let Sujud help you build consistency in your daily salah
             </p>
-            <Button size="lg" variant="secondary" asChild className="shadow-lg hover:shadow-xl transition-shadow">
-              <Link href="/signup" className="text-primary">Get started for free <ArrowRight className="ml-2 h-5 w-5 text-primary" /></Link>
+            <Button size="lg" variant="default" asChild className="shadow-lg hover:shadow-xl transition-shadow">
+              <Link href="/signup">Get started for free <ArrowRight className="ml-2 h-5 w-5 text-primary-foreground" /></Link>
             </Button>
           </div>
         </section>
@@ -113,8 +113,8 @@ export default function LandingPage() {
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
               Join SUJUD and transform your spiritual routine. It's free to start, and the rewards are eternal.
             </p>
-            <Button size="lg" variant="secondary" asChild className="shadow-lg hover:shadow-xl transition-shadow">
-              <Link href="/signup" className="text-primary">Sign Up Now <ArrowRight className="ml-2 h-5 w-5 text-primary" /></Link>
+            <Button size="lg" variant="default" asChild className="shadow-lg hover:shadow-xl transition-shadow">
+              <Link href="/signup">Sign Up Now <ArrowRight className="ml-2 h-5 w-5 text-primary-foreground" /></Link>
             </Button>
           </div>
         </section>
