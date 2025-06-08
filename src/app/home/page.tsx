@@ -24,8 +24,8 @@ export default function HomePage() {
     }
   }, []);
 
-  const userName = user?.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' 
-    ? user.displayName 
+  const userName = user?.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== ''
+    ? user.displayName
     : 'User';
 
   const handleCopyInviteLink = () => {
@@ -64,8 +64,9 @@ export default function HomePage() {
           Assalam alaikum, {userName}
         </h1>
         <Button variant="outline" asChild>
-          <Link href="/prayer-history" className="flex items-center">
+          <Link href="/prayer-history" className="flex items-center gap-2 px-3"> {/* Added gap-2 and px-3 for padding when text is shown */}
             <CalendarDays size={20} />
+            <span className="hidden md:inline">View Prayer History</span>
           </Link>
         </Button>
       </div>
