@@ -115,7 +115,11 @@ export default function LandingPage() {
                   <div className={index % 2 === 0 ? "md:order-1" : "md:order-2"}> {/* Alternating order for text */}
                     <h3 className="text-2xl md:text-3xl font-bold font-headline text-primary mb-4">{feature.title}</h3>
                     <p className="text-lg text-muted-foreground mb-8">{feature.description}</p>
-                    <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] text-primary-foreground hover:opacity-90 rounded-full"
+                    >
                       <Link href={feature.buttonLink}>
                         {feature.buttonText}
                         <ArrowRight className="ml-2 h-5 w-5" />
@@ -124,7 +128,7 @@ export default function LandingPage() {
                   </div>
                   {/* Image Column */}
                   <div className={index % 2 === 0 ? "md:order-2" : "md:order-1"}> {/* Alternating order for image */}
-                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl hover:shadow-primary/20 transition-shadow duration-300">
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden transition-shadow duration-300">
                       <Image
                         src={feature.imageSrc}
                         alt={feature.imageAlt}
