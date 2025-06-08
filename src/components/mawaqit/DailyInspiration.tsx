@@ -71,7 +71,7 @@ export default function DailyInspiration() {
       if (currentTodayString !== lastFetchedDateFromStorage) {
         loadInspiration(); // Date has changed, fetch new inspiration
       }
-    }, 5 * 60 * 1000); // Check every 5 minutes
+    }, 30 * 1000); // Changed to 30 seconds (30 * 1000 ms) for testing
 
     return () => clearInterval(intervalId); // Cleanup interval on unmount
   }, [loadInspiration]);
@@ -142,3 +142,4 @@ export default function DailyInspiration() {
     </Card>
   );
 }
+

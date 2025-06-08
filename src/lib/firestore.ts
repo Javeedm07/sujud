@@ -86,14 +86,14 @@ export const updatePrayerStatus = async (userId: string, date: string, prayerNam
 
 export const fetchDailyInspiration = async (): Promise<DailyInspirationContent> => {
   try {
-    const inspirationsColRef = collection(db, 'daily_inspirations');
+    const inspirationsColRef = collection(db, 'quotes'); // Changed from 'daily_inspirations'
     let querySnapshot = await getDocs(inspirationsColRef); 
 
     if (querySnapshot.empty) {
       await seedDailyInspirations(); 
       querySnapshot = await getDocs(inspirationsColRef); 
       if (querySnapshot.empty) {
-        console.warn("Daily inspirations collection still empty after seeding.");
+        console.warn("Quotes collection still empty after seeding."); // Changed log message
         return { 
           id: 'fallback_seed_empty',
           type: 'quote',
@@ -248,7 +248,7 @@ const seedDailyInspirations = async () => {
     // You can continue adding more quotes here...
   ];
 
-  const inspirationsColRef = collection(db, 'daily_inspirations');
+  const inspirationsColRef = collection(db, 'quotes'); // Changed from 'daily_inspirations'
   for (const insp of inspirationsData) {
     const docId = insp.content.substring(0, 20).replace(/\s+/g, '_').replace(/[^\w]/gi, '') || `insp_${Math.random().toString(36).substring(7)}`; 
     const docRef = doc(inspirationsColRef, docId); 
@@ -265,7 +265,7 @@ const seedDailyInspirations = async () => {
         console.error("Error seeding inspiration: ", insp.content, e);
     }
   }
-  console.log("Daily inspirations seeded or updated with a larger list, including category and dateAdded.");
+  console.log("Quotes seeded or updated with a larger list, including category and dateAdded."); // Changed log message
 };
 
 export const getPrayerStats = async (userId: string, period: 'daily' | 'weekly' | 'monthly', filter?: PrayerName | 'all'): Promise<DocumentData[]> => {
