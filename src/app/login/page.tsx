@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth'; // Removed GoogleAuthProvider, signInWithPopup
+import { signInWithEmailAndPassword } from 'firebase/auth'; 
 import { z } from 'zod';
 import { auth } from '@/lib/firebase';
 import AuthForm from '@/components/mawaqit/AuthForm';
@@ -24,22 +24,25 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({ title: 'Success', description: 'Logged in successfully.' });
-      router.push('/home'); // Redirect to /home
+      router.push('/home'); 
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
+      let errorMessage = 'An unexpected error occurred. Please try again.';
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        errorMessage = 'Incorrect email or password. Please try again.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      toast({ variant: 'destructive', title: 'Login Failed', description: errorMessage });
       console.error('Login error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Removed handleGoogleSignIn function
-
   return (
     <AuthForm
       formSchema={loginSchema}
       onSubmit={handleEmailLogin}
-      // onGoogleSignIn prop removed
       mode="login"
       loading={loading}
     />
