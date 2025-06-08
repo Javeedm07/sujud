@@ -21,7 +21,7 @@ h1, h2, h3, h4, h5, h6 {
     --popover: 0 0% 100%;
     --popover-foreground: 210 10% 23%;
 
-    --primary: 197 48% 64%; /* Serene blue (#72BCD4) */
+    --primary: 227 95% 58%; /* Vibrant Blue (#2D5AFA) */
     --primary-foreground: 210 40% 98%; /* Light text on primary */
 
     --secondary: 207 30% 88%; /* Slightly darker than background for secondary elements */
@@ -38,11 +38,11 @@ h1, h2, h3, h4, h5, h6 {
 
     --border: 207 20% 88%;
     --input: 207 20% 92%;
-    --ring: 197 48% 54%; /* Slightly darker primary for ring */
+    --ring: 227 95% 50%; /* Slightly darker version of new primary for ring */
 
     --radius: 0.5rem;
 
-    --chart-1: 197 48% 64%;
+    --chart-1: 227 95% 58%; /* Updated to new primary */
     --chart-2: 175 38% 64%;
     --chart-3: 210 40% 70%;
     --chart-4: 43 74% 66%;
@@ -68,8 +68,8 @@ h1, h2, h3, h4, h5, h6 {
     --popover: 210 10% 15%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 197 48% 64%;
-    --primary-foreground: 197 25% 15%;
+    --primary: 227 95% 58%; /* Vibrant Blue (#2D5AFA) */
+    --primary-foreground: 210 40% 98%; /* Light text for good contrast on vibrant blue */
 
     --secondary: 210 10% 25%;
     --secondary-foreground: 210 40% 98%;
@@ -85,7 +85,7 @@ h1, h2, h3, h4, h5, h6 {
 
     --border: 210 10% 20%;
     --input: 210 10% 22%;
-    --ring: 197 48% 74%;
+    --ring: 227 95% 65%; /* Lighter version of new primary for ring in dark mode */
     
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
