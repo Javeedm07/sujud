@@ -92,7 +92,7 @@ export default function PrayerStats() {
 
   return (
     <div className="space-y-6">
-        <Card className="shadow-lg">
+        <Card>
             <CardHeader>
             <CardTitle className="font-headline text-primary">Prayers Completed (Last 7 Days)</CardTitle>
             <CardDescription>Total prayers marked as completed each day.</CardDescription>
@@ -114,7 +114,7 @@ export default function PrayerStats() {
             </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card>
             <CardHeader>
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                 <div>
@@ -151,7 +151,7 @@ export default function PrayerStats() {
             </CardContent>
         </Card>
         
-        <Card className="shadow-lg">
+        <Card>
             <CardHeader>
             <CardTitle className="font-headline text-primary">Prayer Consistency Trend (Last 4 Weeks)</CardTitle>
             <CardDescription>Total prayers completed week over week.</CardDescription>
