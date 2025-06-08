@@ -143,31 +143,32 @@ export default function LandingPage() {
 
         {/* How It Works Section */}
         <section id="how-it-works" className="py-16 md:py-24 bg-secondary/30">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 text-center"> {/* Added text-center for the button */}
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-center text-foreground mb-16">
               Simple steps to spiritual growth
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"> {/* Added mb-12 for spacing */}
               {howItWorksSteps.map((step, index) => (
                 <div key={index} className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md hover:shadow-lg transition-shadow">
                   <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground text-2xl font-bold mb-4">
                     {index + 1}
                   </div>
                   <h3 className="text-xl font-semibold mb-2 text-foreground">{step.title}</h3>
-                  <p className="text-muted-foreground mb-6">{step.description}</p>
-                  <Button
-                    asChild
-                    size="lg"
-                    className="mt-auto bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] text-primary-foreground hover:opacity-90 rounded-full"
-                  >
-                    <Link href="/login">
-                      Get Started for Free
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
+                  <p className="text-muted-foreground">{step.description}</p>
+                  {/* Button removed from here */}
                 </div>
               ))}
             </div>
+            <Button
+              asChild
+              size="lg"
+              className="bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] text-primary-foreground hover:opacity-90 rounded-full"
+            >
+              <Link href="/login">
+                Get Started for Free
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
           </div>
         </section>
         
@@ -193,3 +194,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
