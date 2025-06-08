@@ -60,7 +60,7 @@ export default function SignupPage() {
       } else {
         toast({ variant: 'destructive', title: 'Signup Failed', description: error.message });
       }
-      console.error('Signup error:', error);
+      // console.error('Signup error:', error); // Removed to prevent Next.js overlay for this handled error
     } finally {
       setLoading(false);
     }
@@ -75,3 +75,4 @@ export default function SignupPage() {
     />
   );
 }
+
