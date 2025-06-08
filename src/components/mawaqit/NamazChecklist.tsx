@@ -47,8 +47,8 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
       setPrayers(dailyPrayersData);
     } catch (err) {
       console.error("Failed to fetch prayers:", err);
-      setError("Could not load prayer data. Please try again later.");
-      toast({ variant: "destructive", title: "Error", description: "Failed to load prayer data." });
+      setError("Could not load salah data. Please try again later.");
+      toast({ variant: "destructive", title: "Error", description: "Failed to load salah data." });
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     try {
       await updatePrayerStatus(user.uid, dateStringForChecklist, prayerName, checked);
       toast({
-        title: "Prayer Updated",
+        title: "Salah Updated",
         description: `${prayerName} marked as ${checked ? 'completed' : 'pending'} for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}.`,
       });
     } catch (err) {
@@ -83,20 +83,20 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     }
   };
   
-  const userName = user?.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' ? user.displayName : 'User';
-  const isToday = initialDateString === getTodayDateString() || !initialDateString;
-  const cardTitleText = isToday
-    ? `Assalam alaikum ${userName}`
-    : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`;
+  // const userName = user?.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' ? user.displayName : 'User';
+  // const isToday = initialDateString === getTodayDateString() || !initialDateString;
+  // const cardTitleText = isToday
+  //   ? `Assalam alaikum ${userName}`
+  //   : `Prayers for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`;
 
   if (loading) {
     return (
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-headline text-primary">
-            {cardTitleText}
+            Salah Tracker
           </CardTitle>
-          <CardDescription>Loading your prayer checklist for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}...</CardDescription>
+          <CardDescription>Loading your salah checklist for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}...</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {PRAYER_NAMES.map((name) => (
@@ -130,11 +130,11 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
       <Card className="shadow-lg">
         <CardHeader>
            <CardTitle className="text-2xl font-headline text-primary">
-            {cardTitleText}
+            Salah Tracker
            </CardTitle>
-           <CardDescription>No prayer data found for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.</CardDescription>
+           <CardDescription>No salah data found for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.</CardDescription>
         </CardHeader>
-         <CardContent><p>Could not initialize prayer data for this day. Prayers might be recorded once you interact with them.</p></CardContent>
+         <CardContent><p>Could not initialize salah data for this day. Salah might be recorded once you interact with them.</p></CardContent>
       </Card>
     );
   }
@@ -143,10 +143,10 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-2xl font-headline text-primary">
-          {cardTitleText}
+          Salah Tracker
         </CardTitle>
         <CardDescription>
-          Check off your prayers for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.
+          Check off your salah for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -178,3 +178,4 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     </Card>
   );
 }
+
