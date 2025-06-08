@@ -10,13 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Moon, Sunrise, Sun, Sunset, CloudSun, Circle, CheckCircle, XCircle } from 'lucide-react';
+import { Moon, Sunrise, Sun, Sunset, CloudSun, Circle, CheckCircle, XCircle as XCircleIcon, X } from 'lucide-react'; // Renamed XCircle to XCircleIcon to avoid conflict with X
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import * as DialogPrimitive from "@radix-ui/react-dialog"; // For the 'X' close button
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
+  // AlertDialogAction, // Not used
+  // AlertDialogCancel, // Removed
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -225,7 +226,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
               labelClass = 'text-primary font-semibold';
               prayerTimeIconColorClass = 'text-primary';
             } else if (status === 'NOT_PRAYED') {
-              StatusIcon = XCircle;
+              StatusIcon = XCircleIcon; // Use renamed XCircleIcon
               iconColorClass = 'text-destructive';
               rowBgClass = 'bg-destructive/10 border-destructive/50';
               labelClass = 'text-destructive line-through';
@@ -244,14 +245,13 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
               >
                 <div className="flex items-center space-x-3">
                   <PrayerTimeIcon className={`w-6 h-6 ${prayerTimeIconColorClass}`} />
-                  <span className={`text-lg ${labelClass}`}> {/* Changed Label to span */}
+                  <span className={`text-lg ${labelClass}`}>
                     {prayerName}
                   </span>
                 </div>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                       {/* This button is just for visual tooltip, main click is on the div */}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -275,9 +275,13 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
 
       <AlertDialog open={isPopupOpen} onOpenChange={(open) => {
           setIsPopupOpen(open);
-          if (!open) setSelectedPrayerForPopup(null); // Reset if closed via overlay or Esc
+          if (!open) setSelectedPrayerForPopup(null);
       }}>
         <AlertDialogContent>
+          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
           <AlertDialogHeader>
             <AlertDialogTitle>Update {selectedPrayerForPopup} Status</AlertDialogTitle>
             <AlertDialogDescription>
@@ -285,8 +289,8 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {setIsPopupOpen(false); setSelectedPrayerForPopup(null);}}>Cancel</AlertDialogCancel>
-            <Button variant="destructive" onClick={() => handlePopupAction('NOT_PRAYED')}>
+            {/* AlertDialogCancel removed */}
+            <Button variant="outline" onClick={() => handlePopupAction('NOT_PRAYED')}>
               Not Prayed
             </Button>
             <Button variant="default" onClick={() => handlePopupAction('PRAYED')}>
@@ -298,6 +302,3 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     </>
   );
 }
-
-
-    
