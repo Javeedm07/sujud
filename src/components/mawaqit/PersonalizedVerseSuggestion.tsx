@@ -51,9 +51,7 @@ export default function PersonalizedVerseSuggestion() {
     <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader>
         {/* CardTitle containing the icon and title has been removed */}
-        <CardDescription>
-          Share a challenge you&apos;re facing, and receive a relevant Quranic verse for guidance and reflection.
-        </CardDescription>
+        {/* CardDescription has been removed */}
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
