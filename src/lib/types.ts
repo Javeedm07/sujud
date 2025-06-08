@@ -21,14 +21,7 @@ export interface DailyPrayers {
   Isha: Omit<Prayer, 'name'>;
 }
 
-export interface DailyInspirationContent {
-  id: string;
-  type: 'quote' | 'verse';
-  content: string;
-  source: string;
-  category?: string; // Optional category
-  dateAdded?: Date | Timestamp; // Date when the inspiration was added
-}
+// DailyInspirationContent interface removed
 
 export interface PrayerStat {
   date: string; // Or month, week string
@@ -41,4 +34,3 @@ export interface UserProfileData {
   phoneNumber?: string;
   // Add other custom fields here if needed in Firestore user document
 }
-

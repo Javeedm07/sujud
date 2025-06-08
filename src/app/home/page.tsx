@@ -3,7 +3,7 @@
 
 import AuthenticatedLayout from '@/components/layout/AuthenticatedLayout';
 import NamazChecklist from '@/components/mawaqit/NamazChecklist';
-import DailyInspiration from '@/components/mawaqit/DailyInspiration';
+// DailyInspiration import removed
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -62,7 +62,7 @@ export default function HomePage() {
 
   const prayerHistoryButton = (
     <Button variant="outline" asChild>
-      <Link href="/prayer-history" className="flex items-center gap-2 px-3"> {/* Added gap-2 and px-3 for padding when text is shown */}
+      <Link href="/prayer-history" className="flex items-center gap-2 px-3">
         <CalendarDays size={20} />
         <span className="hidden md:inline">View Prayer History</span>
       </Link>
@@ -95,7 +95,7 @@ export default function HomePage() {
           <NamazChecklist />
         </div>
         <div className="space-y-6">
-          <DailyInspiration />
+          {/* DailyInspiration component removed */}
           <Card className="bg-card/80 backdrop-blur-sm transform hover:scale-[1.01] transition-transform duration-300 ease-out">
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary flex items-center gap-2">
