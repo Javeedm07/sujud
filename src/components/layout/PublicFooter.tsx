@@ -13,7 +13,7 @@ export default function PublicFooter() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start"> {/* Changed items-center to items-start for overall grid alignment */}
           <div className="flex flex-col items-center md:items-start">
             <Link href="/" className="flex items-center gap-2 mb-2">
-              <Image src="/logo.svg" alt="SUJUD Logo" width={28} height={28} className="text-primary" />
+              <Image src="/logo.svg" alt="SUJUD Logo" width={28} height={28} />
               <span className="text-xl font-bold font-headline text-primary">SUJUD</span>
             </Link>
             <p className="text-sm text-muted-foreground text-center md:text-left">

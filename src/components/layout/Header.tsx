@@ -52,7 +52,7 @@ export default function Header() {
     <header className="bg-card shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/home" className="flex items-center gap-2" onClick={() => setIsSheetOpen(false)}>
-          <Image src="/logo.svg" alt="SUJUD Logo" width={32} height={32} className="text-primary" />
+          <Image src="/logo.svg" alt="SUJUD Logo" width={32} height={32} />
           <h1 className="text-2xl font-headline font-bold text-primary">SUJUD</h1>
         </Link>
         
@@ -72,7 +72,7 @@ export default function Header() {
                   {/* Sheet Header */}
                   <div className="p-4 border-b border-border">
                     <Link href="/home" className="flex items-center gap-2" onClick={() => setIsSheetOpen(false)}>
-                      <Image src="/logo.svg" alt="SUJUD Logo" width={28} height={28} className="text-primary" />
+                      <Image src="/logo.svg" alt="SUJUD Logo" width={28} height={28} />
                       <span className="text-xl font-bold font-headline text-primary">SUJUD</span>
                     </Link>
                   </div>
