@@ -13,7 +13,7 @@ h1, h2, h3, h4, h5, h6 {
 
 @layer base {
   :root {
-    --background: 207 27% 95%; /* Light grayish-blue (#F0F4F7) */
+    --background: 207 27% 95%; /* Light grayish-blue (#F0F4F7) - PRD */
     --foreground: 210 10% 23%; /* Darker text for readability */
 
     --card: 0 0% 100%;
@@ -22,29 +22,29 @@ h1, h2, h3, h4, h5, h6 {
     --popover: 0 0% 100%;
     --popover-foreground: 210 10% 23%;
 
-    --primary: 227 95% 58%; /* Vibrant Blue (#2D5AFA) */
+    --primary: 227 95% 58%; /* Vibrant Blue (#2D5AFA) - User Requested */
     --primary-foreground: 210 40% 98%; /* Light text on primary */
 
-    --secondary: 207 30% 88%; /* Slightly darker than background for secondary elements */
+    --secondary: 207 30% 88%; /* Slightly darker than background */
     --secondary-foreground: 210 10% 23%;
 
     --muted: 207 30% 80%;
     --muted-foreground: 210 10% 45%;
 
-    --accent: 227 95% 58%; /* Changed from Muted green to Vibrant Blue (Primary) */
-    --accent-foreground: 210 40% 98%; /* Changed to match Primary Foreground */
+    --accent: 227 95% 58%; /* User requested blue instead of PRD green */
+    --accent-foreground: 210 40% 98%; /* To match primary-foreground */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 207 20% 88%;
     --input: 207 20% 92%;
-    --ring: 227 95% 50%; /* Slightly darker version of new primary for ring */
+    --ring: 227 95% 50%; /* Derived from primary blue */
 
     --radius: 0.5rem;
 
-    --chart-1: 227 95% 58%; /* Updated to new primary */
-    --chart-2: 210 40% 70%; /* Changed from accent to chart-3's HSL */
+    --chart-1: 227 95% 58%; /* Primary blue */
+    --chart-2: 210 40% 70%; 
     --chart-3: 210 40% 70%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
@@ -54,8 +54,8 @@ h1, h2, h3, h4, h5, h6 {
     --sidebar-foreground: 210 10% 23%;
     --sidebar-primary: 227 95% 58%;
     --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 227 95% 58%; /* Changed from Muted green to Vibrant Blue (Primary) */
-    --sidebar-accent-foreground: 210 40% 98%; /* Changed to match Primary Foreground */
+    --sidebar-accent: 227 95% 58%; 
+    --sidebar-accent-foreground: 210 40% 98%; 
     --sidebar-border: 207 20% 88%;
     --sidebar-ring: 227 95% 50%;
   }
@@ -70,8 +70,8 @@ h1, h2, h3, h4, h5, h6 {
     --popover: 210 10% 15%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 227 95% 58%; /* Vibrant Blue (#2D5AFA) */
-    --primary-foreground: 210 40% 98%; /* Light text for good contrast on vibrant blue */
+    --primary: 227 95% 58%; /* Vibrant Blue (#2D5AFA) - User Requested */
+    --primary-foreground: 210 40% 98%; 
 
     --secondary: 210 10% 25%;
     --secondary-foreground: 210 40% 98%;
@@ -79,23 +79,23 @@ h1, h2, h3, h4, h5, h6 {
     --muted: 210 10% 20%;
     --muted-foreground: 210 20% 65%;
 
-    --accent: 227 95% 58%; /* Changed from Muted green to Vibrant Blue (Primary) */
-    --accent-foreground: 210 40% 98%; /* Changed to match Primary Foreground */
+    --accent: 227 95% 58%; /* User requested blue instead of PRD green */
+    --accent-foreground: 210 40% 98%; 
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 210 10% 20%;
     --input: 210 10% 22%;
-    --ring: 227 95% 65%; /* Lighter version of new primary for ring in dark mode */
+    --ring: 227 95% 65%; /* Lighter version of primary blue for dark mode ring */
     
     /* Sidebar variables aligned with main theme for consistency */
     --sidebar-background: 210 10% 12%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 227 95% 58%;
     --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 227 95% 58%; /* Changed from Muted green to Vibrant Blue (Primary) */
-    --sidebar-accent-foreground: 210 40% 98%; /* Changed to match Primary Foreground */
+    --sidebar-accent: 227 95% 58%; 
+    --sidebar-accent-foreground: 210 40% 98%; 
     --sidebar-border: 210 10% 20%;
     --sidebar-ring: 227 95% 65%;
   }
