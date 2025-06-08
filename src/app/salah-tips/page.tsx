@@ -24,8 +24,7 @@ export default function SalahTipsPage() {
           </CardHeader>
           <CardContent>
             <CardDescription className="text-base">
-              We're working hard to bring you a collection of insightful tips and best practices to help enhance your Salah, both in quantity and quality.
-              Please check back later!
+              We're launching soon a collection of insightful tips and best practices to help you improve your Salah.
             </CardDescription>
           </CardContent>
         </Card>
