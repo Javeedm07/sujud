@@ -20,7 +20,7 @@ export default function PublicFooter() {
   return (
     <footer className="border-t border-border/40 bg-background">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start"> {/* Changed items-center to items-start for overall grid alignment */}
           <div className="flex flex-col items-center md:items-start">
             <Link href="/" className="flex items-center gap-2 mb-2">
               <InlineMosqueIcon className="h-7 w-7 text-primary" />
@@ -31,9 +31,9 @@ export default function PublicFooter() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center md:items-center">
+          <div className="flex flex-col items-center md:items-start"> {/* Changed md:items-center to md:items-start */}
             <h3 className="text-md font-semibold text-foreground mb-2">Quick Links</h3>
-            <ul className="space-y-1 text-center">
+            <ul className="space-y-1 text-left"> {/* Changed text-center to text-left */}
               <li><Link href="#features" className="text-sm text-muted-foreground hover:text-primary">Features</Link></li>
               <li><Link href="#how-it-works" className="text-sm text-muted-foreground hover:text-primary">How It Works</Link></li>
               <li><Link href="/signup" className="text-sm text-muted-foreground hover:text-primary">Sign Up</Link></li>
@@ -41,9 +41,9 @@ export default function PublicFooter() {
             </ul>
           </div>
 
-          <div className="flex flex-col items-center md:items-end">
+          <div className="flex flex-col items-center md:items-start"> {/* Changed md:items-end to md:items-start */}
             <h3 className="text-md font-semibold text-foreground mb-2">Legal</h3>
-             <ul className="space-y-1 text-center md:text-right">
+             <ul className="space-y-1 text-left"> {/* Changed text-center md:text-right to text-left */}
               <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
               <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary">Terms of Service</Link></li>
             </ul>
