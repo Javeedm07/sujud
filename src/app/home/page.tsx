@@ -5,9 +5,9 @@ import AuthenticatedLayout from '@/components/layout/AuthenticatedLayout';
 import NamazChecklist from '@/components/mawaqit/NamazChecklist';
 import DailyInspiration from '@/components/mawaqit/DailyInspiration';
 import { useAuth } from '@/hooks/useAuth';
-// import { Button } from '@/components/ui/button'; // Removed
-// import Link from 'next/link'; // Removed
-// import { CalendarDays } from 'lucide-react'; // Removed
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { CalendarDays } from 'lucide-react';
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -22,7 +22,12 @@ export default function HomePage() {
         <h1 className="text-3xl font-bold font-headline text-primary">
           Assalam alaikum, {userName}
         </h1>
-        {/* Button linking to prayer-history removed */}
+        <Button variant="outline" asChild>
+          <Link href="/prayer-history" className="flex items-center gap-2">
+            <CalendarDays size={20} />
+            View Prayer History
+          </Link>
+        </Button>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
