@@ -18,7 +18,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from '@/lib/utils';
-import { ThemeToggle } from '@/components/ThemeToggle';
+// ThemeToggle import removed
 import React, { useState } from 'react';
 
 export default function Header() {
@@ -101,13 +101,15 @@ export default function Header() {
                     })}
                   </nav>
 
-                  {/* Theme Toggle Section at the bottom of the sheet */}
+                  {/* Theme Toggle Section at the bottom of the sheet - REMOVED */}
+                  {/*
                   <div className="p-4 mt-auto border-t border-border">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-foreground">Theme</span>
                       <ThemeToggle />
                     </div>
                   </div>
+                  */}
                 </SheetContent>
               </Sheet>
 
@@ -152,16 +154,16 @@ export default function Header() {
               )}
             </>
           ) : (
-            // Logged-out state: ThemeToggle and AuthButtons
+            // Logged-out state: AuthButtons (ThemeToggle removed)
             <>
-              {!loading && <ThemeToggle />} {/* Show ThemeToggle if not loading and not logged in */}
-              {loading && <div className="h-10 w-10 bg-muted rounded-full animate-pulse mr-2"></div>} {/* Skeleton for ThemeToggle space */}
+              {/* {!loading && <ThemeToggle />} ThemeToggle removed */}
+              {/* {loading && <div className="h-10 w-10 bg-muted rounded-full animate-pulse mr-2"></div>} Skeleton for ThemeToggle space, no longer needed */}
               {!loading && (
                 <>
                   <Button variant="ghost" size="sm" asChild>
                     <Link href="/login">Login</Link>
                   </Button>
-                  <Button size="sm" asChild>
+                  <Button size="sm" asChild className="bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] text-primary-foreground hover:opacity-90">
                     <Link href="/signup">Sign Up</Link>
                   </Button>
                 </>

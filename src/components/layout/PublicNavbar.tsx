@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
-import { ThemeToggle } from '@/components/ThemeToggle';
+// ThemeToggle import removed
 
 export default function PublicNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -15,7 +15,7 @@ export default function PublicNavbar() {
   const navLinks = [
     { href: "#features", label: "Features" },
     { href: "#how-it-works", label: "How It Works" },
-    { href: "#testimonials", label: "Testimonials" },
+    // { href: "#testimonials", label: "Testimonials" }, // Testimonials link removed
   ];
 
   return (
@@ -35,13 +35,13 @@ export default function PublicNavbar() {
             ))}
           </nav>
 
-          <ThemeToggle />
+          {/* ThemeToggle removed */}
 
           <div className="hidden md:flex items-center gap-3">
             <Button variant="ghost" asChild>
               <Link href="/login">Login</Link>
             </Button>
-            <Button asChild>
+            <Button asChild className="bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] text-primary-foreground hover:opacity-90">
               <Link href="/signup">Sign Up</Link>
             </Button>
           </div>
@@ -75,7 +75,7 @@ export default function PublicNavbar() {
                     <Button variant="outline" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
                       <Link href="/login">Login</Link>
                     </Button>
-                    <Button className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button className="w-full bg-gradient-to-br from-[#01A6F6] to-[#2D5AFA] text-primary-foreground hover:opacity-90" asChild onClick={() => setIsMobileMenuOpen(false)}>
                       <Link href="/signup">Sign Up</Link>
                     </Button>
                   </div>

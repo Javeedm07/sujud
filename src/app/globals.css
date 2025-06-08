@@ -60,6 +60,8 @@ h1, h2, h3, h4, h5, h6 {
     --sidebar-ring: 227 95% 50%;
   }
 
+  /* Dark theme variables removed as theme is forced to light */
+  /*
   .dark {
     --background: 210 10% 12%; 
     --foreground: 210 40% 98%;
@@ -70,7 +72,7 @@ h1, h2, h3, h4, h5, h6 {
     --popover: 210 10% 15%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 227 95% 58%; /* Vibrant Blue (#2D5AFA) - User Requested */
+    --primary: 227 95% 58%; 
     --primary-foreground: 210 40% 98%; 
 
     --secondary: 210 10% 25%;
@@ -79,7 +81,7 @@ h1, h2, h3, h4, h5, h6 {
     --muted: 210 10% 20%;
     --muted-foreground: 210 20% 65%;
 
-    --accent: 227 95% 58%; /* User requested blue instead of PRD green */
+    --accent: 227 95% 58%; 
     --accent-foreground: 210 40% 98%; 
 
     --destructive: 0 62.8% 30.6%;
@@ -87,9 +89,8 @@ h1, h2, h3, h4, h5, h6 {
 
     --border: 210 10% 20%;
     --input: 210 10% 22%;
-    --ring: 227 95% 65%; /* Lighter version of primary blue for dark mode ring */
+    --ring: 227 95% 65%; 
     
-    /* Sidebar variables aligned with main theme for consistency */
     --sidebar-background: 210 10% 12%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 227 95% 58%;
@@ -99,6 +100,7 @@ h1, h2, h3, h4, h5, h6 {
     --sidebar-border: 210 10% 20%;
     --sidebar-ring: 227 95% 65%;
   }
+  */
 }
 
 @layer base {
