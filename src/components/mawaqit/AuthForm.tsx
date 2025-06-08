@@ -109,6 +109,15 @@ export default function AuthForm({ formSchema, onSubmit, mode, loading }: AuthFo
                   </FormItem>
                 )}
               />
+              {mode === 'login' && (
+                <div className="text-right">
+                  <Link href="/forgot-password" passHref>
+                    <Button variant="link" type="button" className="px-0 text-sm text-primary hover:underline">
+                      Forgot password?
+                    </Button>
+                  </Link>
+                </div>
+              )}
               {mode === 'signup' && (
                 <FormField
                   control={form.control}
