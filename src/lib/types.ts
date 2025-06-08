@@ -6,22 +6,21 @@ export interface User extends FirebaseUser {}
 
 export type PrayerName = 'Fajr' | 'Dhuhr' | 'Asr' | 'Maghrib' | 'Isha';
 
-export interface Prayer {
-  name: PrayerName;
-  completed: boolean;
-  timestamp?: Date | null;
+export type PrayerStatus = 'NOT_MARKED' | 'PRAYED' | 'NOT_PRAYED';
+
+export interface PrayerDetails {
+  status: PrayerStatus;
+  timestamp?: Date | null; // Timestamp primarily for PRAYED status
 }
 
 export interface DailyPrayers {
   date: string; // YYYY-MM-DD
-  Fajr: Omit<Prayer, 'name'>;
-  Dhuhr: Omit<Prayer, 'name'>;
-  Asr: Omit<Prayer, 'name'>;
-  Maghrib: Omit<Prayer, 'name'>;
-  Isha: Omit<Prayer, 'name'>;
+  Fajr: PrayerDetails;
+  Dhuhr: PrayerDetails;
+  Asr: PrayerDetails;
+  Maghrib: PrayerDetails;
+  Isha: PrayerDetails;
 }
-
-// DailyInspirationContent interface removed
 
 export interface PrayerStat {
   date: string; // Or month, week string
@@ -30,7 +29,6 @@ export interface PrayerStat {
 }
 
 export interface UserProfileData {
-  displayName?: string; // Added displayName
+  displayName?: string; 
   phoneNumber?: string;
-  // Add other custom fields here if needed in Firestore user document
 }

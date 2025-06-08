@@ -5,21 +5,30 @@ import type { ChangeEvent } from 'react';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { getDailyPrayers, updatePrayerStatus, PRAYER_NAMES, getTodayDateString } from '@/lib/firestore';
-import type { DailyPrayers, PrayerName } from '@/lib/types';
+import type { DailyPrayers, PrayerName, PrayerStatus, PrayerDetails } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Moon, Sunrise, Sun, Sunset, CloudSun } from 'lucide-react';
+import { Moon, Sunrise, Sun, Sunset, CloudSun, Circle, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-const prayerIcons: Record<PrayerName, React.ElementType> = {
+const prayerTimeIcons: Record<PrayerName, React.ElementType> = {
   Fajr: Sunrise,
   Dhuhr: Sun,
   Asr: CloudSun,
   Maghrib: Sunset,
   Isha: Moon,
 };
+
+const prayerStatusOrder: PrayerStatus[] = ['NOT_MARKED', 'PRAYED', 'NOT_PRAYED'];
+const statusTextMap: Record<PrayerStatus, string> = {
+  'NOT_MARKED': 'Not Marked',
+  'PRAYED': 'Prayed',
+  'NOT_PRAYED': 'Not Prayed'
+};
+
 
 interface NamazChecklistProps {
   initialDateString?: string;
@@ -66,26 +75,40 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     }
   }, [fetchPrayers, user, dateStringForChecklist]);
 
-  const handlePrayerToggle = async (prayerName: PrayerName, checked: boolean) => {
+  const handlePrayerToggle = async (prayerName: PrayerName) => {
     if (!user || !prayers) return;
 
-    const originalPrayers = { ...prayers };
-    setPrayers(prev => prev ? ({
-      ...prev,
-      [prayerName]: { ...prev[prayerName], completed: checked }
-    }) : null);
+    const currentPrayerDetails = prayers[prayerName];
+    if (!currentPrayerDetails) return; // Should ideally not happen if prayers are initialized
+
+    const currentStatus = currentPrayerDetails.status;
+    const currentIndex = prayerStatusOrder.indexOf(currentStatus);
+    const nextIndex = (currentIndex + 1) % prayerStatusOrder.length;
+    const newStatus = prayerStatusOrder[nextIndex];
+
+    const originalPrayers = JSON.parse(JSON.stringify(prayers)); // Deep copy for rollback
+
+    setPrayers(prev => {
+      if (!prev) return null;
+      const updatedPrayer = { 
+        ...prev[prayerName], 
+        status: newStatus, 
+        timestamp: newStatus === 'PRAYED' ? new Date() : null 
+      };
+      return { ...prev, [prayerName]: updatedPrayer as PrayerDetails };
+    });
 
     try {
-      await updatePrayerStatus(user.uid, dateStringForChecklist, prayerName, checked);
+      await updatePrayerStatus(user.uid, dateStringForChecklist, prayerName, newStatus);
       toast({
         title: "Salah Updated",
-        description: `${prayerName} marked as ${checked ? 'completed' : 'pending'} for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}.`,
+        description: `${prayerName} marked as ${statusTextMap[newStatus].toLowerCase()} for ${new Date(dateStringForChecklist + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}.`,
       });
     } catch (err) {
       console.error("Failed to update prayer:", err);
       setError(`Failed to update ${prayerName}. Please try again.`);
       toast({ variant: "destructive", title: "Error", description: `Failed to update ${prayerName}.` });
-      setPrayers(originalPrayers);
+      setPrayers(originalPrayers); // Rollback
     }
   };
   
@@ -96,14 +119,16 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
           <CardTitle className="text-2xl font-headline text-primary">
             Salah Tracker
           </CardTitle>
-          <CardDescription>Loading your salah checklist for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}...</CardDescription>
+          <CardDescription>Loading your salah checklist for {new Date(dateStringForChecklist + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}...</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {PRAYER_NAMES.map((name) => (
-            <div key={name} className="flex items-center space-x-3 p-3 rounded-md border border-transparent">
-              <Skeleton className="h-6 w-6 rounded-full" />
-              <Skeleton className="h-5 w-20" />
-              <Skeleton className="h-5 w-5 ml-auto" />
+            <div key={name} className="flex items-center justify-between p-3 rounded-md border border-transparent">
+              <div className="flex items-center space-x-3">
+                <Skeleton className="h-6 w-6 rounded-full" />
+                <Skeleton className="h-5 w-20" />
+              </div>
+              <Skeleton className="h-9 w-9 rounded-full ml-auto" />
             </div>
           ))}
         </CardContent>
@@ -119,7 +144,7 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
         </CardHeader>
         <CardContent>
           <p className="text-destructive-foreground">{error}</p>
-          <button onClick={fetchPrayers} className="mt-4 text-primary hover:underline">Try again</button>
+          <Button onClick={fetchPrayers} className="mt-4 text-primary hover:underline">Try again</Button>
         </CardContent>
       </Card>
     );
@@ -132,9 +157,9 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
            <CardTitle className="text-2xl font-headline text-primary">
             Salah Tracker
            </CardTitle>
-           <CardDescription>No salah data found for {new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.</CardDescription>
+           <CardDescription>No salah data found for {new Date(dateStringForChecklist + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.</CardDescription>
         </CardHeader>
-         <CardContent><p>Could not initialize salah data for this day. Salah might be recorded once you interact with them.</p></CardContent>
+         <CardContent><p>Could not initialize salah data for this day.</p></CardContent>
       </Card>
     );
   }
@@ -147,33 +172,67 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
         </CardTitle>
         <CardDescription>
           {isToday
-            ? `Check off your salah for today, ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
-            : `Check off your salah for ${new Date(dateStringForChecklist).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
+            ? `Update your salah for today, ${new Date(dateStringForChecklist + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
+            : `Update your salah for ${new Date(dateStringForChecklist + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
           }
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
         {PRAYER_NAMES.map((prayerName) => {
-          const Icon = prayerIcons[prayerName];
-          const isCompleted = prayers[prayerName]?.completed || false;
+          const PrayerTimeIcon = prayerTimeIcons[prayerName];
+          const currentPrayerDetails = prayers[prayerName];
+          const status = currentPrayerDetails?.status || 'NOT_MARKED';
+
+          let StatusIcon = Circle;
+          let iconColorClass = 'text-muted-foreground';
+          let rowBgClass = 'bg-card hover:bg-secondary/50';
+          let labelClass = 'text-foreground';
+          let prayerTimeIconColorClass = 'text-primary/70';
+
+          if (status === 'PRAYED') {
+            StatusIcon = CheckCircle;
+            iconColorClass = 'text-primary';
+            rowBgClass = 'bg-primary/10 border-primary/50';
+            labelClass = 'text-primary font-semibold';
+            prayerTimeIconColorClass = 'text-primary';
+          } else if (status === 'NOT_PRAYED') {
+            StatusIcon = XCircle;
+            iconColorClass = 'text-destructive';
+            rowBgClass = 'bg-destructive/10 border-destructive/50';
+            labelClass = 'text-destructive line-through';
+            prayerTimeIconColorClass = 'text-destructive/70';
+          }
+
           return (
             <div
               key={prayerName}
-              className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 ease-in-out border ${isCompleted ? 'bg-primary/10 border-primary/50' : 'bg-card hover:bg-secondary/50'}`}
+              className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 ease-in-out border ${rowBgClass}`}
             >
               <div className="flex items-center space-x-3">
-                <Icon className={`w-6 h-6 ${isCompleted ? 'text-primary' : 'text-primary/70'}`} />
-                <Label htmlFor={`${prayerName}-${dateStringForChecklist}`} className={`text-lg ${isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                <PrayerTimeIcon className={`w-6 h-6 ${prayerTimeIconColorClass}`} />
+                <Label htmlFor={`${prayerName}-${dateStringForChecklist}-button`} className={`text-lg ${labelClass}`}>
                   {prayerName}
                 </Label>
               </div>
-              <Checkbox
-                id={`${prayerName}-${dateStringForChecklist}`}
-                checked={isCompleted}
-                onCheckedChange={(checked) => handlePrayerToggle(prayerName, Boolean(checked))}
-                aria-label={`Mark ${prayerName} as ${isCompleted ? 'pending' : 'completed'}`}
-                className="h-6 w-6 rounded-md data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary border-primary/50"
-              />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      id={`${prayerName}-${dateStringForChecklist}-button`}
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handlePrayerToggle(prayerName)}
+                      aria-label={`Current status: ${statusTextMap[status]}. Click to change.`}
+                      className={`h-9 w-9 rounded-full ${iconColorClass}`}
+                    >
+                      <StatusIcon className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Status: {statusTextMap[status]}. Click to change.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           );
         })}
