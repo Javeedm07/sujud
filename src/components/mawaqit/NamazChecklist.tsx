@@ -13,6 +13,16 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Moon, Sunrise, Sun, Sunset, CloudSun, Circle, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const prayerTimeIcons: Record<PrayerName, React.ElementType> = {
   Fajr: Sunrise,
@@ -42,6 +52,9 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
   const [error, setError] = useState<string | null>(null);
   
   const [dateStringForChecklist, setDateStringForChecklist] = useState(initialDateString || getTodayDateString());
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedPrayerForPopup, setSelectedPrayerForPopup] = useState<PrayerName | null>(null);
 
   const userName = user?.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== ''
     ? user.displayName
@@ -75,18 +88,10 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
     }
   }, [fetchPrayers, user, dateStringForChecklist]);
 
-  const handlePrayerToggle = async (prayerName: PrayerName) => {
+  const updatePrayerStateAndFirestore = async (prayerName: PrayerName, newStatus: PrayerStatus) => {
     if (!user || !prayers) return;
 
-    const currentPrayerDetails = prayers[prayerName];
-    if (!currentPrayerDetails) return; // Should ideally not happen if prayers are initialized
-
-    const currentStatus = currentPrayerDetails.status;
-    const currentIndex = prayerStatusOrder.indexOf(currentStatus);
-    const nextIndex = (currentIndex + 1) % prayerStatusOrder.length;
-    const newStatus = prayerStatusOrder[nextIndex];
-
-    const originalPrayers = JSON.parse(JSON.stringify(prayers)); // Deep copy for rollback
+    const originalPrayers = JSON.parse(JSON.stringify(prayers)); 
 
     setPrayers(prev => {
       if (!prev) return null;
@@ -108,8 +113,31 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
       console.error("Failed to update prayer:", err);
       setError(`Failed to update ${prayerName}. Please try again.`);
       toast({ variant: "destructive", title: "Error", description: `Failed to update ${prayerName}.` });
-      setPrayers(originalPrayers); // Rollback
+      setPrayers(originalPrayers); 
     }
+  };
+
+  const handlePrayerInteraction = (prayerName: PrayerName) => {
+    if (!user || !prayers) return;
+    const currentPrayerDetails = prayers[prayerName];
+    if (!currentPrayerDetails) return;
+    const currentStatus = currentPrayerDetails.status;
+
+    if (currentStatus === 'NOT_MARKED') {
+      setSelectedPrayerForPopup(prayerName);
+      setIsPopupOpen(true);
+    } else if (currentStatus === 'PRAYED') {
+      updatePrayerStateAndFirestore(prayerName, 'NOT_PRAYED');
+    } else if (currentStatus === 'NOT_PRAYED') {
+      updatePrayerStateAndFirestore(prayerName, 'PRAYED');
+    }
+  };
+  
+  const handlePopupAction = async (newStatus: PrayerStatus) => {
+    if (!selectedPrayerForPopup) return;
+    await updatePrayerStateAndFirestore(selectedPrayerForPopup, newStatus);
+    setIsPopupOpen(false);
+    setSelectedPrayerForPopup(null);
   };
   
   if (loading) {
@@ -165,78 +193,111 @@ export default function NamazChecklist({ initialDateString }: NamazChecklistProp
   }
 
   return (
-    <Card className="bg-card/80 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl font-headline text-primary">
-          {isToday ? `Assalam alaikum, ${userName}` : `Salah Tracker`}
-        </CardTitle>
-        <CardDescription>
-          {isToday
-            ? `Update your salah for today, ${new Date(dateStringForChecklist + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
-            : `Update your salah for ${new Date(dateStringForChecklist + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
-          }
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {PRAYER_NAMES.map((prayerName) => {
-          const PrayerTimeIcon = prayerTimeIcons[prayerName];
-          const currentPrayerDetails = prayers[prayerName];
-          const status = currentPrayerDetails?.status || 'NOT_MARKED';
+    <>
+      <Card className="bg-card/80 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl font-headline text-primary">
+            {isToday ? `Assalam alaikum, ${userName}` : `Salah Tracker`}
+          </CardTitle>
+          <CardDescription>
+            {isToday
+              ? `Update your salah for today, ${new Date(dateStringForChecklist + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
+              : `Update your salah for ${new Date(dateStringForChecklist + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {PRAYER_NAMES.map((prayerName) => {
+            const PrayerTimeIcon = prayerTimeIcons[prayerName];
+            const currentPrayerDetails = prayers[prayerName];
+            const status = currentPrayerDetails?.status || 'NOT_MARKED';
 
-          let StatusIcon = Circle;
-          let iconColorClass = 'text-muted-foreground';
-          let rowBgClass = 'bg-card hover:bg-secondary/50';
-          let labelClass = 'text-foreground';
-          let prayerTimeIconColorClass = 'text-primary/70';
+            let StatusIcon = Circle;
+            let iconColorClass = 'text-muted-foreground';
+            let rowBgClass = 'bg-card hover:bg-secondary/50';
+            let labelClass = 'text-foreground';
+            let prayerTimeIconColorClass = 'text-primary/70';
 
-          if (status === 'PRAYED') {
-            StatusIcon = CheckCircle;
-            iconColorClass = 'text-primary';
-            rowBgClass = 'bg-primary/10 border-primary/50';
-            labelClass = 'text-primary font-semibold';
-            prayerTimeIconColorClass = 'text-primary';
-          } else if (status === 'NOT_PRAYED') {
-            StatusIcon = XCircle;
-            iconColorClass = 'text-destructive';
-            rowBgClass = 'bg-destructive/10 border-destructive/50';
-            labelClass = 'text-destructive line-through';
-            prayerTimeIconColorClass = 'text-destructive/70';
-          }
+            if (status === 'PRAYED') {
+              StatusIcon = CheckCircle;
+              iconColorClass = 'text-primary';
+              rowBgClass = 'bg-primary/10 border-primary/50';
+              labelClass = 'text-primary font-semibold';
+              prayerTimeIconColorClass = 'text-primary';
+            } else if (status === 'NOT_PRAYED') {
+              StatusIcon = XCircle;
+              iconColorClass = 'text-destructive';
+              rowBgClass = 'bg-destructive/10 border-destructive/50';
+              labelClass = 'text-destructive line-through';
+              prayerTimeIconColorClass = 'text-destructive/70';
+            }
 
-          return (
-            <div
-              key={prayerName}
-              className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 ease-in-out border ${rowBgClass}`}
-            >
-              <div className="flex items-center space-x-3">
-                <PrayerTimeIcon className={`w-6 h-6 ${prayerTimeIconColorClass}`} />
-                <Label htmlFor={`${prayerName}-${dateStringForChecklist}-button`} className={`text-lg ${labelClass}`}>
-                  {prayerName}
-                </Label>
+            return (
+              <div
+                key={prayerName}
+                className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 ease-in-out border ${rowBgClass} cursor-pointer`}
+                onClick={() => handlePrayerInteraction(prayerName)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handlePrayerInteraction(prayerName)}}
+                aria-label={`Prayer ${prayerName}, Status: ${statusTextMap[status]}. Click to update.`}
+              >
+                <div className="flex items-center space-x-3">
+                  <PrayerTimeIcon className={`w-6 h-6 ${prayerTimeIconColorClass}`} />
+                  <span className={`text-lg ${labelClass}`}> {/* Changed Label to span */}
+                    {prayerName}
+                  </span>
+                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                       {/* This button is just for visual tooltip, main click is on the div */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`h-9 w-9 rounded-full ${iconColorClass} pointer-events-none`} 
+                        aria-hidden="true" 
+                        tabIndex={-1}
+                      >
+                        <StatusIcon className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Status: {statusTextMap[status]}. Click row to update.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      id={`${prayerName}-${dateStringForChecklist}-button`}
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handlePrayerToggle(prayerName)}
-                      aria-label={`Current status: ${statusTextMap[status]}. Click to change.`}
-                      className={`h-9 w-9 rounded-full ${iconColorClass}`}
-                    >
-                      <StatusIcon className="h-5 w-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Status: {statusTextMap[status]}. Click to change.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      <AlertDialog open={isPopupOpen} onOpenChange={(open) => {
+          setIsPopupOpen(open);
+          if (!open) setSelectedPrayerForPopup(null); // Reset if closed via overlay or Esc
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update {selectedPrayerForPopup} Status</AlertDialogTitle>
+            <AlertDialogDescription>
+              Please select the status for {selectedPrayerForPopup}. Once set, it cannot be marked as "Not Marked" again for this day.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {setIsPopupOpen(false); setSelectedPrayerForPopup(null);}}>Cancel</AlertDialogCancel>
+            <Button variant="destructive" onClick={() => handlePopupAction('NOT_PRAYED')}>
+              Not Prayed
+            </Button>
+            <Button variant="default" onClick={() => handlePopupAction('PRAYED')}>
+              Prayed
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
+
+
+    
