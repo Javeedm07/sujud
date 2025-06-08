@@ -2,22 +2,12 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
 import { ThemeToggle } from '@/components/ThemeToggle';
-
-const InlineMosqueIcon = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 -960 960 960"
-    className={className}
-    fill="currentColor"
-  >
-    <path d="M120-120v-480h80v190l280-175 280 175v-190h80v480H120Zm140-20h80v-170l-40-25-40 25v170Zm400 0h80v-170l-40-25-40 25v170ZM480-565 200-740v-100q0-24 18-42t42-18h400q24 0 42 18t18 42v100L480-565Z"/>
-  </svg>
-);
 
 export default function PublicNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -32,7 +22,7 @@ export default function PublicNavbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
-          <InlineMosqueIcon className="h-8 w-8 text-primary" />
+          <Image src="/logo.svg" alt="SUJUD Logo" width={32} height={32} className="text-primary" />
           <span className="text-2xl font-bold font-headline text-primary">SUJUD</span>
         </Link>
 
@@ -68,7 +58,7 @@ export default function PublicNavbar() {
               <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background p-6">
                 <div className="flex flex-col space-y-6">
                   <Link href="/" className="flex items-center gap-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
-                    <InlineMosqueIcon className="h-8 w-8 text-primary" />
+                    <Image src="/logo.svg" alt="SUJUD Logo" width={32} height={32} className="text-primary" />
                     <span className="text-2xl font-bold font-headline text-primary">SUJUD</span>
                   </Link>
                   {navLinks.map((link) => (

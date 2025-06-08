@@ -2,17 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-
-const InlineMosqueIcon = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 -960 960 960"
-    className={className}
-    fill="currentColor"
-  >
-    <path d="M120-120v-480h80v190l280-175 280 175v-190h80v480H120Zm140-20h80v-170l-40-25-40 25v170Zm400 0h80v-170l-40-25-40 25v170ZM480-565 200-740v-100q0-24 18-42t42-18h400q24 0 42 18t18 42v100L480-565Z"/>
-  </svg>
-);
+import Image from 'next/image';
 
 export default function PublicFooter() {
   const currentYear = new Date().getFullYear();
@@ -23,7 +13,7 @@ export default function PublicFooter() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start"> {/* Changed items-center to items-start for overall grid alignment */}
           <div className="flex flex-col items-center md:items-start">
             <Link href="/" className="flex items-center gap-2 mb-2">
-              <InlineMosqueIcon className="h-7 w-7 text-primary" />
+              <Image src="/logo.svg" alt="SUJUD Logo" width={28} height={28} className="text-primary" />
               <span className="text-xl font-bold font-headline text-primary">SUJUD</span>
             </Link>
             <p className="text-sm text-muted-foreground text-center md:text-left">

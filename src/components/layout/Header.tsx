@@ -2,6 +2,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Home, LayoutDashboard, LogOut, UserCircle, Wand2, CalendarDays, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,19 +20,6 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import React, { useState } from 'react';
-
-// Inline SVG for Mosque Icon
-const InlineMosqueIcon = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 -960 960 960"
-    className={className}
-    fill="currentColor"
-  >
-    <path d="M120-120v-480h80v190l280-175 280 175v-190h80v480H120Zm140-20h80v-170l-40-25-40 25v170Zm400 0h80v-170l-40-25-40 25v170ZM480-565 200-740v-100q0-24 18-42t42-18h400q24 0 42 18t18 42v100L480-565Z"/>
-  </svg>
-);
-
 
 export default function Header() {
   const { user, signOut, loading } = useAuth();
@@ -64,7 +52,7 @@ export default function Header() {
     <header className="bg-card shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/home" className="flex items-center gap-2" onClick={() => setIsSheetOpen(false)}>
-          <InlineMosqueIcon className="h-8 w-8 text-primary" />
+          <Image src="/logo.svg" alt="SUJUD Logo" width={32} height={32} className="text-primary" />
           <h1 className="text-2xl font-headline font-bold text-primary">SUJUD</h1>
         </Link>
         
@@ -84,7 +72,7 @@ export default function Header() {
                   {/* Sheet Header */}
                   <div className="p-4 border-b border-border">
                     <Link href="/home" className="flex items-center gap-2" onClick={() => setIsSheetOpen(false)}>
-                      <InlineMosqueIcon className="h-7 w-7 text-primary" />
+                      <Image src="/logo.svg" alt="SUJUD Logo" width={28} height={28} className="text-primary" />
                       <span className="text-xl font-bold font-headline text-primary">SUJUD</span>
                     </Link>
                   </div>
