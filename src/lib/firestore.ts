@@ -356,10 +356,11 @@ export const getUserProfileData = async (userId: string): Promise<UserProfileDat
     if (userDocSnap.exists()) {
       const data = userDocSnap.data();
       return {
-        phoneNumber: data.phoneNumber || '', // Default to empty string if not present
+        displayName: data.displayName || '', // Ensure displayName is fetched
+        phoneNumber: data.phoneNumber || '',
       };
     }
-    return null; // Or return default empty profile data
+    return null;
   } catch (error) {
     console.error("Error fetching user profile data:", error);
     throw error;
@@ -369,10 +370,10 @@ export const getUserProfileData = async (userId: string): Promise<UserProfileDat
 export const updateUserProfileData = async (userId: string, data: Partial<UserProfileData>): Promise<void> => {
   try {
     const userDocRef = doc(db, 'users', userId);
-    // Use setDoc with merge: true to create the document if it doesn't exist, or update it if it does.
     await setDoc(userDocRef, data, { merge: true }); 
   } catch (error) {
     console.error("Error updating user profile data:", error);
     throw error;
   }
 };
+

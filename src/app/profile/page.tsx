@@ -41,20 +41,19 @@ export default function ProfilePage() {
     },
   });
 
-  // Watch the displayName field to update initials preview dynamically if needed
-  // const watchedDisplayName = form.watch('displayName');
-
-
   useEffect(() => {
     if (user) {
       setPageLoading(true);
       form.reset({
-        displayName: user.displayName === "User" ? "" : user.displayName || '',
+        displayName: user.displayName === "User" || user.displayName === null ? "" : user.displayName,
       });
       
       getUserProfileData(user.uid)
         .then((profileData) => {
           if (profileData) {
+            // If displayName from Firestore is more up-to-date or different, you might want to use it here.
+            // For now, we primarily use auth.currentUser.displayName for form prefill.
+            // form.setValue('displayName', profileData.displayName || (user.displayName === "User" || user.displayName === null ? "" : user.displayName));
             form.setValue('phoneNumber', profileData.phoneNumber || '');
           }
         })
@@ -64,7 +63,7 @@ export default function ProfilePage() {
         })
         .finally(() => setPageLoading(false));
     } else if (!authLoading) {
-      setPageLoading(false); // No user and auth is done loading
+      setPageLoading(false); 
     }
   }, [user, form, toast, authLoading]);
 
@@ -84,31 +83,30 @@ export default function ProfilePage() {
   };
   
   const onSubmit = async (data: ProfileFormValues) => {
-    if (!user || !auth.currentUser) { // Ensure auth.currentUser is also available
+    if (!user || !auth.currentUser) {
       toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to update your profile.' });
       return;
     }
     setIsSubmitting(true);
 
-    const finalDisplayName = (data.displayName?.trim() === '') ? 'User' : data.displayName;
+    const finalDisplayName = (data.displayName?.trim() === '' || data.displayName === null) ? 'User' : data.displayName.trim();
 
     try {
-      const authUpdates: { displayName?: string | null; photoURL?: string | null } = {
-        photoURL: null // Always set photoURL to null as per requirements
-      };
-      
-      // Check if displayName needs update or if photoURL needs to be nulled explicitly
+      // Update Firebase Auth display name
       if (finalDisplayName !== auth.currentUser.displayName || auth.currentUser.photoURL !== null) {
-        authUpdates.displayName = finalDisplayName;
-        // Use auth.currentUser directly for updateProfile
-        await updateProfile(auth.currentUser, authUpdates);
+        await updateProfile(auth.currentUser, { displayName: finalDisplayName, photoURL: null });
       }
 
-
+      // Prepare Firestore updates
       const firestoreUpdates: Partial<UserProfileData> = {};
       const currentFirestoreProfile = await getUserProfileData(user.uid);
+
       if (data.phoneNumber !== (currentFirestoreProfile?.phoneNumber || '')) {
         firestoreUpdates.phoneNumber = data.phoneNumber || '';
+      }
+      // Also update displayName in Firestore
+      if (finalDisplayName !== (currentFirestoreProfile?.displayName || '')) {
+        firestoreUpdates.displayName = finalDisplayName;
       }
       
       if (Object.keys(firestoreUpdates).length > 0) {
@@ -169,8 +167,9 @@ export default function ProfilePage() {
     );
   }
 
-  // Use user.displayName for the CardTitle which reflects the saved state
-  const currentDisplayName = user.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' ? user.displayName : 'User';
+  const currentDisplayNameForCard = user.displayName && user.displayName.toLowerCase() !== 'user' && user.displayName.trim() !== '' 
+    ? user.displayName 
+    : 'User';
 
 
   return (
@@ -190,12 +189,10 @@ export default function ProfilePage() {
                 <div className="flex flex-col items-center space-y-4">
                     <Avatar className="h-32 w-32 text-4xl mb-2">
                         <AvatarImage src={undefined} alt={user.displayName || user.email || "User"} />
-                        {/* AvatarFallback uses user.displayName to only reflect saved state */}
                         <AvatarFallback>{getInitials(user.email, user.displayName)}</AvatarFallback>
                     </Avatar>
                 </div>
-                {/* CardTitle uses currentDisplayName which only reflects saved state */}
-                <CardTitle className="text-2xl mt-4">{currentDisplayName}</CardTitle>
+                <CardTitle className="text-2xl mt-4">{currentDisplayNameForCard}</CardTitle>
                 <CardDescription>{user.email}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">

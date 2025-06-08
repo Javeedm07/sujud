@@ -3,13 +3,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword } from 'firebase/auth'; // Removed GoogleAuthProvider, signInWithPopup, updateProfile
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { z } from 'zod';
 import { auth } from '@/lib/firebase';
+import { updateUserProfileData } from '@/lib/firestore';
 import AuthForm from '@/components/mawaqit/AuthForm';
 import { useToast } from '@/hooks/use-toast';
 
 const signupSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }).max(50, {message: 'Name can be at most 50 characters.'}),
   email: z.string().email({ message: 'Invalid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
   confirmPassword: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
@@ -27,8 +29,14 @@ export default function SignupPage() {
     setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      // You can set a display name here if you have a field for it and re-import updateProfile
-      // await updateProfile(userCredential.user, { displayName: "Some Name" });
+      const user = userCredential.user;
+      
+      // Update Firebase Auth display name
+      await updateProfile(user, { displayName: values.name });
+      
+      // Update Firestore user profile data
+      await updateUserProfileData(user.uid, { displayName: values.name });
+
       toast({ title: 'Success', description: 'Account created successfully.' });
       router.push('/home'); // Redirect to /home
     } catch (error: any) {
@@ -39,15 +47,13 @@ export default function SignupPage() {
     }
   };
 
-  // Removed handleGoogleSignIn function
-
   return (
     <AuthForm
       formSchema={signupSchema}
       onSubmit={handleEmailSignup}
-      // onGoogleSignIn prop removed
       mode="signup"
       loading={loading}
     />
   );
 }
+

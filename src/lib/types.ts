@@ -37,6 +37,8 @@ export interface PrayerStat {
 }
 
 export interface UserProfileData {
+  displayName?: string; // Added displayName
   phoneNumber?: string;
   // Add other custom fields here if needed in Firestore user document
 }
+

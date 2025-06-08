@@ -20,7 +20,6 @@ import Link from 'next/link';
 interface AuthFormProps {
   formSchema: z.ZodSchema<any>;
   onSubmit: (values: z.infer<any>) => Promise<void>;
-  // onGoogleSignIn: () => Promise<void>; // Removed
   mode: 'login' | 'signup';
   loading: boolean;
 }
@@ -28,7 +27,9 @@ interface AuthFormProps {
 export default function AuthForm({ formSchema, onSubmit, mode, loading }: AuthFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: mode === 'signup' ? { email: '', password: '', confirmPassword: '' } : { email: '', password: '' },
+    defaultValues: mode === 'signup' 
+      ? { name: '', email: '', password: '', confirmPassword: '' } 
+      : { email: '', password: '' },
   });
 
   return (
@@ -45,6 +46,21 @@ export default function AuthForm({ formSchema, onSubmit, mode, loading }: AuthFo
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {mode === 'signup' && (
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="email"
@@ -91,9 +107,8 @@ export default function AuthForm({ formSchema, onSubmit, mode, loading }: AuthFo
               </Button>
             </form>
           </Form>
-          {/* Removed Separator and Google Sign-In Button */}
         </CardContent>
-        <CardFooter className="justify-center pt-6"> {/* Added pt-6 for spacing after removing separator */}
+        <CardFooter className="justify-center pt-6">
           {mode === 'login' ? (
             <p className="text-sm text-muted-foreground">
               Don&apos;t have an account?{' '}
@@ -114,3 +129,4 @@ export default function AuthForm({ formSchema, onSubmit, mode, loading }: AuthFo
     </div>
   );
 }
+
