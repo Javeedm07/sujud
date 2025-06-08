@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutDashboard, LogOut, UserCircle, Wand2, CalendarDays } from 'lucide-react';
+import { Home, LayoutDashboard, LogOut, UserCircle, Wand2, CalendarDays, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -15,8 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import React, { useState } from 'react';
 
 // Inline SVG for Mosque Icon
 const InlineMosqueIcon = ({ className }: { className?: string }) => (
@@ -34,6 +36,7 @@ const InlineMosqueIcon = ({ className }: { className?: string }) => (
 export default function Header() {
   const { user, signOut, loading } = useAuth();
   const pathname = usePathname();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const getInitials = (email?: string | null, name?: string | null) => {
     const normalizedName = name?.trim();
@@ -47,7 +50,7 @@ export default function Header() {
       }
     }
     if (email) return email.substring(0, 2).toUpperCase();
-    return "U"; 
+    return "U";
   };
 
   const navItems = [
@@ -60,86 +63,127 @@ export default function Header() {
   return (
     <header className="bg-card shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/home" className="flex items-center gap-2">
+        <Link href="/home" className="flex items-center gap-2" onClick={() => setIsSheetOpen(false)}>
           <InlineMosqueIcon className="h-8 w-8 text-primary" />
           <h1 className="text-2xl font-headline font-bold text-primary">SUJUD</h1>
         </Link>
         
-        <nav className="flex items-center gap-1 sm:gap-2">
-          <ThemeToggle />
-          {user && (
+        <div className="flex items-center gap-1 sm:gap-2">
+          {user ? (
             <>
-              {navItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Button
-                    key={item.label}
-                    variant="ghost"
-                    size="sm"
-                    asChild
-                    className={cn(
-                      "flex items-center gap-1",
-                      isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                    )}
-                  >
-                    <Link href={item.href}>
-                      <item.icon size={18} /> <span className="hidden sm:inline">{item.label}</span>
-                    </Link>
+              {/* Hamburger Menu for logged-in users */}
+              <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-10 w-10">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Open navigation menu</span>
                   </Button>
-                );
-              })}
-            </>
-          )}
-          
-          {loading ? (
-            <div className="h-10 w-10 bg-muted rounded-full animate-pulse"></div>
-          ) : user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <Avatar className="h-9 w-9">
-                    {/* Always show initials by passing undefined to src */}
-                    <AvatarImage src={undefined} alt={user.displayName || user.email || "User"} />
-                    <AvatarFallback>{getInitials(user.email, user.displayName)}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {user.displayName || "User"}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
-                    </p>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col p-0">
+                  {/* Sheet Header */}
+                  <div className="p-4 border-b border-border">
+                    <Link href="/home" className="flex items-center gap-2" onClick={() => setIsSheetOpen(false)}>
+                      <InlineMosqueIcon className="h-7 w-7 text-primary" />
+                      <span className="text-xl font-bold font-headline text-primary">SUJUD</span>
+                    </Link>
                   </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="flex items-center w-full">
-                    <UserCircle className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+
+                  {/* Navigation Links */}
+                  <nav className="flex-grow p-4 space-y-1.5 overflow-y-auto">
+                    {navItems.map((item) => {
+                      const isActive = pathname === item.href;
+                      return (
+                        <Button
+                          key={item.label}
+                          variant={isActive ? "secondary" : "ghost"}
+                          asChild
+                          className={cn(
+                            "w-full justify-start text-base py-2.5 px-3",
+                            isActive ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:text-primary hover:bg-accent/50"
+                          )}
+                          onClick={() => setIsSheetOpen(false)}
+                        >
+                          <Link href={item.href} className="flex items-center gap-3">
+                            <item.icon size={20} />
+                            <span>{item.label}</span>
+                          </Link>
+                        </Button>
+                      );
+                    })}
+                  </nav>
+
+                  {/* Theme Toggle Section at the bottom of the sheet */}
+                  <div className="p-4 mt-auto border-t border-border">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-foreground">Theme</span>
+                      <ThemeToggle />
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+
+              {/* Profile Icon/User Dropdown - remains outside */}
+              {loading ? (
+                 <div className="h-10 w-10 bg-muted rounded-full animate-pulse"></div>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src={undefined} alt={user.displayName || user.email || "User"} />
+                        <AvatarFallback>{getInitials(user.email, user.displayName)}</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                          {user.displayName || "User"}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center w-full">
+                        <UserCircle className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => { signOut(); setIsSheetOpen(false); }}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </>
           ) : (
+            // Logged-out state: ThemeToggle and AuthButtons
             <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/signup">Sign Up</Link>
-              </Button>
+              {!loading && <ThemeToggle />} {/* Show ThemeToggle if not loading and not logged in */}
+              {loading && <div className="h-10 w-10 bg-muted rounded-full animate-pulse mr-2"></div>} {/* Skeleton for ThemeToggle space */}
+              {!loading && (
+                <>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link href="/login">Login</Link>
+                  </Button>
+                  <Button size="sm" asChild>
+                    <Link href="/signup">Sign Up</Link>
+                  </Button>
+                </>
+              )}
             </>
           )}
-        </nav>
+          {/* Skeleton for profile avatar if auth is still loading and user is not yet determined */}
+          {loading && !user && (
+              <div className="h-10 w-10 bg-muted rounded-full animate-pulse"></div>
+          )}
+        </div>
       </div>
     </header>
   );
