@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -49,9 +50,7 @@ export default function PersonalizedVerseSuggestion() {
   return (
     <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-xl font-headline text-primary flex items-center gap-2">
-          <Wand2 size={24} /> Personalized Verse Suggestion
-        </CardTitle>
+        {/* CardTitle containing the icon and title has been removed */}
         <CardDescription>
           Share a challenge you&apos;re facing, and receive a relevant Quranic verse for guidance and reflection.
         </CardDescription>
