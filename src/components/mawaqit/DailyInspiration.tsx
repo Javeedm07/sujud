@@ -16,31 +16,38 @@ export default function DailyInspiration() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadInspiration = useCallback(async () => {
-    setLoading(true);
+  const loadInspiration = useCallback(async (isIntervalCall = false) => {
+    if (!isIntervalCall) { // Only set loading true for initial load or manual refresh, not interval
+        setLoading(true);
+    }
     setError(null);
     const todayString = getTodayDateString();
 
     try {
-      const data = await fetchDailyInspiration(); // fetchDailyInspiration should always return a valid object due to fallbacks
+      const data = await fetchDailyInspiration(); 
       setInspiration(data);
       localStorage.setItem(LOCAL_STORAGE_INSPIRATION_KEY, JSON.stringify(data));
-      localStorage.setItem(LOCAL_STORAGE_FETCH_DATE_KEY, todayString);
+      localStorage.setItem(LOCAL_STORAGE_FETCH_DATE_KEY, todayString); // Keep this for daily PRD logic
     } catch (err) {
       console.error("Failed to fetch daily inspiration:", err);
       setError("Could not load inspiration. Please try again later.");
-      // Attempt to load from local storage as a fallback if fetching fails but data for today might exist
-      const storedInspirationString = localStorage.getItem(LOCAL_STORAGE_INSPIRATION_KEY);
-      if (storedInspirationString) {
-        try {
-            const storedInspiration = JSON.parse(storedInspirationString) as DailyInspirationContent;
-            setInspiration(storedInspiration);
-        } catch (parseError) {
-            console.error("Failed to parse stored inspiration on error:", parseError);
-        }
+      // Fallback to localStorage if fetch fails, especially if it's an interval call
+      // and we don't want to lose the previously displayed quote due to a transient error.
+      if (isIntervalCall) {
+          const storedInspirationString = localStorage.getItem(LOCAL_STORAGE_INSPIRATION_KEY);
+          if (storedInspirationString) {
+            try {
+                const storedInspiration = JSON.parse(storedInspirationString) as DailyInspirationContent;
+                setInspiration(storedInspiration); // Restore previous if fetch fails on interval
+            } catch (parseError) {
+                console.error("Failed to parse stored inspiration on error:", parseError);
+            }
+          }
       }
     } finally {
-      setLoading(false);
+      if (!isIntervalCall) {
+          setLoading(false);
+      }
     }
   }, []);
 
@@ -49,6 +56,7 @@ export default function DailyInspiration() {
     const storedFetchDate = localStorage.getItem(LOCAL_STORAGE_FETCH_DATE_KEY);
     const storedInspirationString = localStorage.getItem(LOCAL_STORAGE_INSPIRATION_KEY);
 
+    // Initial load logic: Use cache if valid for today, otherwise fetch.
     if (storedFetchDate === todayString && storedInspirationString) {
       try {
         const storedInspiration = JSON.parse(storedInspirationString) as DailyInspirationContent;
@@ -56,27 +64,22 @@ export default function DailyInspiration() {
         setLoading(false);
       } catch (e) {
         console.error("Failed to parse stored inspiration:", e);
-        loadInspiration(); // Fetch fresh if parsing fails
+        loadInspiration(false); // Fetch fresh if parsing fails
       }
     } else {
-      // If date is different or no stored inspiration, fetch new one
-      loadInspiration();
+      loadInspiration(false); // If date is different or no stored inspiration, fetch new one
     }
 
-    // Set up an interval to check for date change (e.g., past midnight)
+    // Set up an interval to refresh the quote every 30 seconds FOR TESTING
     const intervalId = setInterval(() => {
-      const currentTodayString = getTodayDateString();
-      // Use the state or re-get from localStorage for the most accuracy on last fetch date
-      const lastFetchedDateFromStorage = localStorage.getItem(LOCAL_STORAGE_FETCH_DATE_KEY); 
-      if (currentTodayString !== lastFetchedDateFromStorage) {
-        loadInspiration(); // Date has changed, fetch new inspiration
-      }
-    }, 30 * 1000); // Changed to 30 seconds (30 * 1000 ms) for testing
+      // For testing, we call loadInspiration directly to get a new random quote
+      loadInspiration(true); // Pass true to indicate it's an interval call
+    }, 30 * 1000); 
 
     return () => clearInterval(intervalId); // Cleanup interval on unmount
   }, [loadInspiration]);
 
-  if (loading) {
+  if (loading && !inspiration) { // Show skeleton only on initial hard loading
     return (
       <Card className="bg-card/80 backdrop-blur-sm">
         <CardHeader>
@@ -92,7 +95,7 @@ export default function DailyInspiration() {
     );
   }
 
-  if (error && !inspiration) { // Show error only if there's no inspiration to display
+  if (error && !inspiration) { 
     return (
       <Card className="bg-destructive/10 text-destructive-foreground">
         <CardHeader>
@@ -107,7 +110,7 @@ export default function DailyInspiration() {
     );
   }
   
-  if (!inspiration) { // Fallback if inspiration is null for any reason (e.g. initial error before any load)
+  if (!inspiration) { 
      return (
       <Card className="bg-card/80 backdrop-blur-sm">
         <CardHeader>

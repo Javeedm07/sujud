@@ -127,14 +127,9 @@ export const fetchDailyInspiration = async (): Promise<DailyInspirationContent> 
         };
     }
 
-    // Make selection deterministic based on the day of the year
-    const today = new Date();
-    const startOfYear = new Date(today.getFullYear(), 0, 0); // Day 0 of the year
-    const diff = today.getTime() - startOfYear.getTime();
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor(diff / oneDay); // dayOfYear is 1-indexed for Jan 1st
-
-    const selectedInspiration = inspirations[ (dayOfYear -1 ) % inspirations.length]; // Use (dayOfYear - 1) for 0-based array index
+    // Select a random inspiration for testing purposes
+    const randomIndex = Math.floor(Math.random() * inspirations.length);
+    const selectedInspiration = inspirations[randomIndex];
     return selectedInspiration;
 
   } catch (error) {
